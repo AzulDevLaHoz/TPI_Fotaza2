@@ -1,12 +1,12 @@
 import { Model, DataTypes } from "sequelize";
-import sequelize from "./config.js";
+import sequelize from "../config/config.js";
 
 export class Image extends Model {}
 
 Image.init(
     {
         id: {
-            type: DataTypes.INTEGER(20),
+            type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
             unique: true
@@ -39,7 +39,7 @@ Image.init(
 
     {
         sequelize,
-        tableName: "Image",
+        tableName: "image",
         timestamps: true,
         paranoid: true,
         underscored: true

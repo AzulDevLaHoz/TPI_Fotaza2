@@ -1,5 +1,5 @@
 import { Model, DataTypes } from "sequelize";
-import sequelize from "./config.js";
+import sequelize from "../config/config.js";
 import bcrypt from 'bcrypt';
 
 export class User extends Model {
@@ -11,7 +11,7 @@ export class User extends Model {
 
 User.init({
     id: {
-        type: DataTypes.INTEGER(20),
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
         unique: true
@@ -60,7 +60,7 @@ User.init({
 
     {
         sequelize,
-        tableName: "User",
+        tableName: "user",
         timestamps: true,
         paranoid: true,
         underscored: true

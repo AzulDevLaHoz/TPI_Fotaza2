@@ -1,26 +1,30 @@
 import { Model, DataTypes } from "sequelize";
-import sequelize from "./config.js";
+import sequelize from "../config/config.js";
 
-export class Notification extends Notification { }
+export class Collection extends Model {}
 
-Notification.init(
+Collection.init(
     {
         id: {
-            type: DataTypes.INTEGER(20),
+            type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
             unique: true
         },
-        read: {
+        name: {
+            type: DataTypes.STRING(100),
+            allowNull: false,
+        },
+        isDefault: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: false
+            defaultValue: true
         },
     },
 
     {
         sequelize,
-        tableName: "Notification",
+        tableName: "collection",
         timestamps: true,
         paranoid: true,
         underscored: true

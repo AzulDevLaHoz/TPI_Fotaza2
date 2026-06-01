@@ -1,26 +1,29 @@
 import { Model, DataTypes } from "sequelize";
-import sequelize from "./config.js";
+import sequelize from "../config/config.js";
 
-export class Label extends Model {}
+export class Rating extends Model { }
 
-Label.init(
+Rating.init(
     {
         id: {
-            type: DataTypes.INTEGER(20),
+            type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
             unique: true
         },
-        name: {
-            type: DataTypes.STRING(200),
+        value: {
+            type: DataTypes.INTEGER,
             allowNull: false,
-            unique: true
+            validate: {
+                min: 1,
+                max: 5
+            }
         },
     },
 
     {
         sequelize,
-        tableName: "Label",
+        tableName: "rating",
         timestamps: true,
         paranoid: true,
         underscored: true

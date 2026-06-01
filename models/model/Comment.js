@@ -1,12 +1,12 @@
 import { Model, DataTypes } from "sequelize";
-import sequelize from "./config.js";
+import sequelize from "../config/config.js";
 
-export class Comment extends Comment {}
+export class Comment extends Model {}
 
 Comment.init(
     {
         id: {
-            type: DataTypes.INTEGER(20),
+            type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
             unique: true
@@ -19,7 +19,7 @@ Comment.init(
 
     {
         sequelize,
-        tableName: "Comment",
+        tableName: "comment",
         timestamps: true,
         paranoid: true,
         underscored: true

@@ -1,24 +1,23 @@
 import { Model, DataTypes } from "sequelize";
-import sequelize from "./config.js";
+import sequelize from "../config/config.js";
 
-export class Posts extends Model {}
+export class Post extends Model {}
 
-Posts.init(
+Post.init(
     {
         id: {
-            type: DataTypes.INTEGER(20),
+            type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
             unique: true
         },
         title: {
-            type: DataTypes.TEXT(300),
+            type: DataTypes.TEXT,
             allowNull: false,
         },
         description: {
             type: DataTypes.STRING(100),
             allowNull: true,
-            defaultValue: 'active'
         },
         state: {
             type: DataTypes.ENUM(
@@ -27,12 +26,13 @@ Posts.init(
                 'review_pending'
             ),
             allowNull: false,
+            defaultValue: 'active'
         },
     },
 
     {
         sequelize,
-        tableName: "Post",
+        tableName: "post",
         timestamps: true,
         paranoid: true,
         underscored: true

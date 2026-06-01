@@ -1,29 +1,26 @@
 import { Model, DataTypes } from "sequelize";
-import sequelize from "./config.js";
+import sequelize from "../config/config.js";
 
-export class Rating extends Rating {}
+export class Notification extends Model { }
 
-Rating.init(
+Notification.init(
     {
         id: {
-            type: DataTypes.INTEGER(20),
+            type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
             unique: true
         },
-        value: {
-            type: DataTypes.INTEGER,
+        read: {
+            type: DataTypes.BOOLEAN,
             allowNull: false,
-            validate: {
-                min: 1,
-                max: 5
-            }
+            defaultValue: false
         },
     },
 
     {
         sequelize,
-        tableName: "Rating",
+        tableName: "notification",
         timestamps: true,
         paranoid: true,
         underscored: true
