@@ -1,0 +1,37 @@
+extends ../layouts/base.pug
+
+block content
+  .row.justify-content-center
+    .col-md-5
+      .card.shadow-sm
+        .card-body.p-4
+          h2.card-title.text-center.mb-4 Iniciar sesión
+
+          include ../partials/alert.pug
+
+          if registered
+            .alert.alert-success ¡Cuenta creada con éxito! Ya podés iniciar sesión.
+
+          form(method="POST" action="/auth/login")
+            .mb-3
+              label.form-label Email
+              input.form-control(
+                type="email"
+                name="email"
+                placeholder="tu@email.com"
+                required
+              )
+            .mb-3
+              label.form-label Contraseña
+              input.form-control(
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                required
+              )
+            button.btn.btn-primary.w-100(type="submit") Entrar
+
+          hr
+          .text-center
+            small ¿No tenés cuenta?&nbsp;
+              a(href="/auth/register") Registrate acá

@@ -1,0 +1,15 @@
+extends layouts/base.pug
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-4
+    h2 Publicaciones recientes
+    if user
+      a.btn.btn-primary(href="/post/create") + Nueva publicación
+
+  if post.length === 0
+    .alert.alert-info No hay publicaciones todavía. ¡Sé el primero en subir una!
+  else
+    .row.g-4
+      each post in posts
+        .col-sm-6.col-md-4
+          include partials/post-card.pug

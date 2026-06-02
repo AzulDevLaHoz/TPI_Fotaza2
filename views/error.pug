@@ -1,0 +1,9 @@
+extends layouts/base.pug
+
+block content
+  .row.justify-content-center.mt-5
+    .col-md-6.text-center
+      h1.display-1 😕
+      h2.mb-3 Algo salió mal
+      p.text-muted= message || 'Ocurrió un error inesperado.'
+      a.btn.btn-primary(href="/") Volver al inicio

@@ -1,0 +1,60 @@
+extends ../layouts/base.pug
+
+block content
+  .row.justify-content-center
+    .col-md-6
+      .card.shadow-sm
+        .card-body.p-4
+          h2.card-title.text-center.mb-4 Crear cuenta
+
+          include ../partials/alert.pug
+
+          form(method="POST" action="/auth/register")
+            .row
+              .col-md-6.mb-3
+                label.form-label Nombre
+                input.form-control(
+                  type="text"
+                  name="firstname"
+                  placeholder="Ana"
+                  required
+                )
+              .col-md-6.mb-3
+                label.form-label Apellido
+                input.form-control(
+                  type="text"
+                  name="lastname"
+                  placeholder="García"
+                  required
+                )
+            .mb-3
+              label.form-label Nombre de usuario
+              input.form-control(
+                type="text"
+                name="username"
+                placeholder="anagarcia92"
+                required
+              )
+            .mb-3
+              label.form-label Email
+              input.form-control(
+                type="email"
+                name="email"
+                placeholder="tu@email.com"
+                required
+              )
+            .mb-3
+              label.form-label Contraseña
+              input.form-control(
+                type="password"
+                name="password"
+                placeholder="Mínimo 6 caracteres"
+                required
+                minlength="6"
+              )
+            button.btn.btn-success.w-100(type="submit") Registrarse
+
+          hr
+          .text-center
+            small ¿Ya tenés cuenta?&nbsp;
+              a(href="/auth/login") Iniciá sesión
