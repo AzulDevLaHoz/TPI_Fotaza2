@@ -1,0 +1,65 @@
+extends ../layouts/base.pug
+
+block content
+  include ../partials/alert.pug
+
+  //- Portada / header del perfil
+  .card.mb-4.overflow-hidden
+    .bg-primary(style="height:120px;background:linear-gradient(135deg,#1877f2,#42b72a) !important")
+    .card-body.pt-0
+      .d-flex.align-items-end.gap-3.mb-3(style="margin-top:-45px")
+        .rounded-circle.bg-white.border.border-4.border-white.d-flex.align-items-center.justify-content-center.flex-shrink-0(
+          style="width:90px;height:90px;font-size:2.5rem;font-weight:900;background:var(--fb-blue) !important;color:white;border-color:white !important"
+        )= profileUser.firstname[0].toUpperCase()
+        div.pb-1
+          h4.fw-bold.mb-0= profileUser.firstname + ' ' + profileUser.lastname
+          p.text-muted.mb-0= '@' + profileUser.username
+
+      .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
+
+        //- Stats
+        .d-flex.gap-4
+          div.text-center
+            h5.fw-bold.mb-0= followersCount
+            small.text-muted Seguidores
+          div.text-center
+            h5.fw-bold.mb-0= followingCount
+            small.text-muted Siguiendo
+          div.text-center
+            h5.fw-bold.mb-0= profileUser.Posts ? profileUser.Posts.length : 0
+            small.text-muted Publicaciones
+
+        //- Botones de acción
+        if user
+          if user.id === profileUser.id
+            a.btn.btn-outline-secondary.btn-sm(href="#")
+              i.bi.bi-pencil-fill.me-1
+              | Editar perfil
+          else
+            .d-flex.gap-2
+              if isFollowing
+                form(method="POST" action=`/follows/unfollow/${profileUser.id}`)
+                  button.btn.btn-outline-secondary.fw-semibold(type="submit")
+                    i.bi.bi-person-check-fill.me-1
+                    | Siguiendo
+              else
+                form(method="POST" action=`/follows/follow/${profileUser.id}`)
+                  button.btn.btn-primary.fw-semibold(type="submit")
+                    i.bi.bi-person-plus-fill.me-1
+                    | Seguir
+
+  //- Publicaciones
+  h5.fw-bold.mb-3
+    i.bi.bi-grid-3x3.me-2
+    | Publicaciones de #{profileUser.username}
+
+  if !profileUser.Posts || profileUser.Posts.length === 0
+    .card.text-center.py-5
+      .card-body
+        i.bi.bi-camera.display-4.text-muted
+        p.mt-3.text-muted Este usuario todavía no tiene publicaciones.
+  else
+    .row.g-3
+      each post in profileUser.Posts
+        .col-6.col-md-4
+          include ../partials/post-card.pug
