@@ -8,6 +8,7 @@ import sequelize from './models/config/config.js';
 import './models/sync/sync.js';
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
+import postRoutes from './routes/post.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,6 +37,19 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
+app.use('/post', postRoutes);
+
+app.get('/post/:postId/image/:imageId', async (req, res) => {
+    try {
+        const { Image } = await import('./models/sync/sync.js');
+        const image = await Image.findByPk(req.params.imageId);
+        if (!image || !image.file) return res.status(404).send('Imagen no encontrada');
+        res.set('Content-Type', 'image/jpeg');
+        res.send(image.file);
+    } catch (error) {
+        res.status(500).send('Error al cargar imagen');
+    }
+});
 
 async function startServer() {
     try {

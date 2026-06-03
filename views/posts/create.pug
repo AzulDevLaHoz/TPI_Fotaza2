@@ -1,0 +1,83 @@
+extends ../layouts/base.pug
+
+block content
+  .row.justify-content-center
+    .col-md-7.col-lg-6
+      .card.shadow-sm
+        .card-body.p-4
+          h4.fw-bold.mb-4
+            i.bi.bi-image-fill.me-2.text-primary
+            | Nueva publicación
+
+          include ../partials/alert.pug
+
+          form(
+            method="POST"
+            action="/post/create"
+            enctype="multipart/form-data"
+          )
+            .mb-3
+              label.form-label.fw-semibold Título *
+              input.form-control(
+                type="text"
+                name="title"
+                placeholder="Un título descriptivo"
+                required
+              )
+
+            .mb-3
+              label.form-label.fw-semibold Descripción
+              textarea.form-control(
+                name="description"
+                rows="3"
+                placeholder="Contá algo sobre esta foto (opcional)"
+              )
+
+            .mb-3
+              label.form-label.fw-semibold Etiquetas
+              input.form-control(
+                type="text"
+                name="labels"
+                placeholder="naturaleza, ciudad, retrato (separadas por coma)"
+              )
+              .form-text Separalas con comas.
+
+            .mb-3
+              label.form-label.fw-semibold Imágenes *
+              input.form-control(
+                type="file"
+                name="images"
+                multiple
+                accept="image/*"
+                required
+              )
+              .form-text Podés subir varias a la vez. Máx. 10MB por imagen.
+
+            .card.bg-light.border-0.p-3.mb-3
+              .form-check.mb-2
+                input.form-check-input#copyrightCheck(
+                  type="checkbox"
+                  name="copyright"
+                  value="true"
+                )
+                label.form-check-label.fw-semibold(for="copyrightCheck")
+                  i.bi.bi-shield-lock.me-1.text-warning
+                  | Proteger con copyright
+
+              #copyrightTextDiv(style="display:none")
+                input.form-control.form-control-sm(
+                  type="text"
+                  name="copyrightText"
+                  placeholder="Ej: © Tu nombre 2025"
+                )
+
+            button.btn.btn-primary.w-100.py-2.fw-bold(type="submit")
+              i.bi.bi-cloud-upload.me-2
+              | Publicar
+
+  script.
+    const check = document.getElementById('copyrightCheck')
+    const div = document.getElementById('copyrightTextDiv')
+    check.addEventListener('change', () => {
+      div.style.display = check.checked ? 'block' : 'none'
+    })

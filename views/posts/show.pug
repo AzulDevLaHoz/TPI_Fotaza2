@@ -1,0 +1,155 @@
+extends ../layouts/base.pug
+
+block content
+  include ../partials/alert.pug
+
+  .row.justify-content-center
+    .col-lg-8
+
+      //- Cabecera del post
+      .card.mb-3
+        .card-body.pb-2
+          .d-flex.align-items-center.gap-3.mb-3
+            .rounded-circle.bg-primary.d-flex.align-items-center.justify-content-center(
+              style="width:42px;height:42px;color:white;font-weight:700"
+            )= post.User.firstname[0].toUpperCase()
+            div
+              a.fw-bold.text-decoration-none.text-dark(href=`/profile/${post.User.id}`)
+                = post.User.firstname + ' ' + post.User.lastname
+              p.text-muted.small.mb-0= '@' + post.User.username
+
+          h5.fw-bold= post.title
+
+          if post.description
+            p.text-muted= post.description
+
+          if post.Labels && post.Labels.length > 0
+            .mb-2
+              each label in post.Labels
+                span.badge.bg-secondary.me-1= label.name
+
+      //- Imágenes
+      each image in post.Images
+        .card.mb-4
+
+          img.w-100(
+            src=`/post/${post.id}/image/${image.id}`
+            alt="imagen"
+            style="max-height:600px;object-fit:contain;background:#f0f2f5;border-radius:12px 12px 0 0"
+          )
+
+          .card-body
+
+            //- Valoraciones
+            - const ratings = image.Ratings || []
+            - const total = ratings.length
+            - const avg = total > 0 ? (ratings.reduce((a, r) => a + r.value, 0) / total).toFixed(1) : null
+
+            .d-flex.align-items-center.justify-content-between.mb-3.pb-3(style="border-bottom:1px solid #dddfe2")
+              .d-flex.align-items-center.gap-2
+                if avg
+                  span.fw-semibold ⭐ #{avg}
+                  span.text-muted.small (#{total} valoracion#{total !== 1 ? 'es' : ''})
+                else
+                  span.text-muted.small Sin valoraciones todavía
+
+              if user && user.id !== post.User.id
+                form.d-flex.align-items-center.gap-2(
+                  method="POST"
+                  action="/rating/rate"
+                )
+                  input(type="hidden" name="imageId" value=image.id)
+                  input(type="hidden" name="postId" value=post.id)
+                  select.form-select.form-select-sm(name="value" style="width:auto")
+                    option(value="1") ⭐ 1
+                    option(value="2") ⭐⭐ 2
+                    option(value="3") ⭐⭐⭐ 3
+                    option(value="4") ⭐⭐⭐⭐ 4
+                    option(value="5") ⭐⭐⭐⭐⭐ 5
+                  button.btn.btn-sm.btn-warning.fw-semibold(type="submit")
+                    i.bi.bi-star-fill.me-1
+                    | Valorar
+
+            //- Toggle comentarios (solo autor)
+            if user && user.id === post.User.id
+              form.mb-3(
+                method="POST"
+                action=`/comment/toggle/${image.id}`
+              )
+                button.btn.btn-sm.btn-outline-secondary(type="submit")
+                  if image.activeComments
+                    i.bi.bi-lock-fill.me-1
+                    | Cerrar comentarios
+                  else
+                    i.bi.bi-unlock-fill.me-1
+                    | Abrir comentarios
+
+            //- Comentarios
+            h6.fw-bold.mb-3
+              i.bi.bi-chat-fill.me-1.text-primary
+              | Comentarios
+
+            if !image.activeComments
+              p.text-muted.small Los comentarios están cerrados para esta imagen.
+            else
+              if image.Comments && image.Comments.length > 0
+                each comment in image.Comments
+                  .d-flex.gap-2.mb-3
+                    .rounded-circle.bg-secondary.d-flex.align-items-center.justify-content-center.flex-shrink-0(
+                      style="width:34px;height:34px;color:white;font-weight:700;font-size:.8rem"
+                    )= comment.User ? comment.User.username[0].toUpperCase() : '?'
+                    .flex-grow-1
+                      .bg-light.rounded-3.px-3.py-2(style="border-radius:18px !important")
+                        strong.small= comment.User ? comment.User.username : 'Usuario'
+                        p.mb-0.small= comment.body
+                      if user && (user.id === post.User.id || user.id === comment.user_id)
+                        form.d-inline(method="POST" action=`/comment/delete/${comment.id}`)
+                          button.btn.btn-link.text-danger.p-0.small(type="submit") Eliminar
+              else
+                p.text-muted.small.mb-3 Todavía no hay comentarios. ¡Sé el primero!
+
+              if user
+                form.mt-2(method="POST" action="/comment/create")
+                  input(type="hidden" name="imageId" value=image.id)
+                  input(type="hidden" name="postId" value=post.id)
+                  .d-flex.gap-2.align-items-center
+                    .rounded-circle.bg-primary.d-flex.align-items-center.justify-content-center.flex-shrink-0(
+                      style="width:34px;height:34px;color:white;font-weight:700;font-size:.8rem"
+                    )= user.firstname[0].toUpperCase()
+                    .input-group
+                      input.form-control(
+                        type="text"
+                        name="body"
+                        placeholder="Escribí un comentario..."
+                        required
+                        style="border-radius:20px 0 0 20px"
+                      )
+                      button.btn.btn-primary(
+                        type="submit"
+                        style="border-radius:0 20px 20px 0"
+                      )
+                        i.bi.bi-send-fill
+              else
+                p.text-muted.small
+                  a(href="/auth/login") Iniciá sesión
+                  |  para comentar.
+
+      //- Acciones del autor
+      if user && user.id === post.User.id
+        .d-flex.gap-2.mb-4
+          a.btn.btn-outline-secondary.btn-sm(href="/post")
+            i.bi.bi-arrow-left.me-1
+            | Volver
+          form.ms-auto(
+            method="POST"
+            action=`/post/${post.id}/delete`
+            onsubmit="return confirm('¿Seguro que querés eliminar esta publicación?')"
+          )
+            button.btn.btn-danger.btn-sm(type="submit")
+              i.bi.bi-trash-fill.me-1
+              | Eliminar publicación
+      else
+        .mb-4
+          a.btn.btn-outline-secondary.btn-sm(href="/post")
+            i.bi.bi-arrow-left.me-1
+            | Volver
