@@ -1,37 +1,41 @@
 extends ../layouts/base.pug
 
 block content
-  .row.justify-content-center
-    .col-md-5
-      .card.shadow-sm
-        .card-body.p-4
-          h2.card-title.text-center.mb-4 Iniciar sesión
+  .row.justify-content-center.mt-5
+    .col-md-5.col-lg-4
+      .text-center.mb-4
+        h1.fw-bold(style="color:var(--fb-blue);font-size:3rem;letter-spacing:-1px")
+          i.bi.bi-camera-fill
+          |  Fotaza
+        p.text-muted Iniciá sesión para ver tus fotos
 
-          include ../partials/alert.pug
+      .landing-card
 
-          if registered
-            .alert.alert-success ¡Cuenta creada con éxito! Ya podés iniciar sesión.
+        include ../partials/alert.pug
 
-          form(method="POST" action="/auth/login")
-            .mb-3
-              label.form-label Email
-              input.form-control(
-                type="email"
-                name="email"
-                placeholder="tu@email.com"
-                required
-              )
-            .mb-3
-              label.form-label Contraseña
-              input.form-control(
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                required
-              )
-            button.btn.btn-primary.w-100(type="submit") Entrar
+        if registered
+          .alert.alert-success.d-flex.align-items-center.gap-2
+            i.bi.bi-check-circle-fill
+            | ¡Cuenta creada! Ya podés iniciar sesión.
 
-          hr
-          .text-center
-            small ¿No tenés cuenta?&nbsp;
-              a(href="/auth/register") Registrate acá
+        form(method="POST" action="/auth/login")
+          .mb-3
+            input.form-control.form-control-lg(
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+            )
+          .mb-3
+            input.form-control.form-control-lg(
+              type="password"
+              name="password"
+              placeholder="Contraseña"
+              required
+            )
+          button.btn.btn-primary.w-100.btn-lg.fw-bold(type="submit") Entrar
+
+        hr.my-4
+        .text-center
+          p.mb-2.text-muted ¿No tenés cuenta?
+          a.btn.btn-success.w-100.fw-bold(href="/auth/register") Crear cuenta nueva

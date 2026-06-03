@@ -1,60 +1,64 @@
 extends ../layouts/base.pug
 
 block content
-  .row.justify-content-center
-    .col-md-6
-      .card.shadow-sm
-        .card-body.p-4
-          h2.card-title.text-center.mb-4 Crear cuenta
+  .row.justify-content-center.mt-4
+    .col-md-6.col-lg-5
+      .text-center.mb-4
+        h1.fw-bold(style="color:var(--fb-blue);font-size:3rem;letter-spacing:-1px")
+          i.bi.bi-camera-fill
+          |  Fotaza
+        p.text-muted Creá tu cuenta y empezá a compartir fotos
 
-          include ../partials/alert.pug
+      .landing-card
 
-          form(method="POST" action="/auth/register")
-            .row
-              .col-md-6.mb-3
-                label.form-label Nombre
-                input.form-control(
-                  type="text"
-                  name="firstname"
-                  placeholder="Ana"
-                  required
-                )
-              .col-md-6.mb-3
-                label.form-label Apellido
-                input.form-control(
-                  type="text"
-                  name="lastname"
-                  placeholder="García"
-                  required
-                )
-            .mb-3
-              label.form-label Nombre de usuario
+        include ../partials/alert.pug
+
+        form(method="POST" action="/auth/register")
+          .row.g-3.mb-3
+            .col-6
               input.form-control(
                 type="text"
-                name="username"
-                placeholder="anagarcia92"
+                name="firstname"
+                placeholder="Nombre"
                 required
               )
-            .mb-3
-              label.form-label Email
+            .col-6
               input.form-control(
-                type="email"
-                name="email"
-                placeholder="tu@email.com"
+                type="text"
+                name="lastname"
+                placeholder="Apellido"
                 required
               )
-            .mb-3
-              label.form-label Contraseña
-              input.form-control(
-                type="password"
-                name="password"
-                placeholder="Mínimo 6 caracteres"
-                required
-                minlength="6"
-              )
-            button.btn.btn-success.w-100(type="submit") Registrarse
+          .mb-3
+            input.form-control(
+              type="text"
+              name="username"
+              placeholder="Nombre de usuario"
+              required
+            )
+          .mb-3
+            input.form-control(
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+            )
+          .mb-3
+            input.form-control(
+              type="password"
+              name="password"
+              placeholder="Contraseña (mín. 6 caracteres)"
+              required
+              minlength="6"
+            )
+          .mb-3
+            small.text-muted
+              | Al registrarte aceptás los términos de uso y las normas de la comunidad.
+          button.btn.btn-success.w-100.fw-bold.py-2(type="submit")
+            i.bi.bi-person-plus-fill.me-2
+            | Crear cuenta
 
-          hr
-          .text-center
-            small ¿Ya tenés cuenta?&nbsp;
-              a(href="/auth/login") Iniciá sesión
+        hr.my-4
+        .text-center
+          p.mb-2.text-muted ¿Ya tenés cuenta?
+          a.btn.btn-primary.w-100.fw-bold(href="/auth/login") Iniciar sesión

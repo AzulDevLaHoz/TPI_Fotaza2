@@ -6,6 +6,7 @@ import 'dotenv/config';
 
 import sequelize from './models/config/config.js';
 import './models/sync/sync.js';
+import authRoutes from './routes/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,17 +33,19 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/auth', authRoutes);
+
 async function startServer() {
     try {
         await sequelize.authenticate();
-        console.log('Conexión a la BD exitosa');
+        console.log('✅ Conexión a la BD exitosa');
         await sequelize.sync({ alter: true });
-        console.log('Modelos sincronizados');
+        console.log('✅ Modelos sincronizados');
         app.listen(PORT, () => {
-            console.log(`Servidor corriendo en http://localhost:${PORT}`);
+            console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
         });
     } catch (error) {
-        console.error('Error al iniciar:', error);
+        console.error('❌ Error al iniciar:', error);
     }
 }
 
