@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import postRoutes from './routes/post.js';
 import commentRoutes from './routes/comment.js';
+import followRoutes from './routes/follow.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,7 +41,7 @@ app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/post', postRoutes);
 app.use('/comment', commentRoutes);
-
+app.use('/follows', followRoutes);
 
 app.get('/post/:postId/image/:imageId', async (req, res) => {
     try {
