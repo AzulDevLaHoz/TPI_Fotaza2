@@ -12,6 +12,7 @@ import postRoutes from './routes/post.js';
 import commentRoutes from './routes/comment.js';
 import followRoutes from './routes/follow.js';
 import ratingRoutes from './routes/rating.js';
+import searchRoutes from './routes/search.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,6 +45,27 @@ app.use('/post', postRoutes);
 app.use('/comment', commentRoutes);
 app.use('/follows', followRoutes);
 app.use('/rating', ratingRoutes);
+app.use('/search', searchRoutes);
+
+app.get('/', async (req, res) => {
+    try {
+        const { Post, Image, User, Label } = await import('./models/sync/sync.js');
+        const posts = await Post.findAll({
+            where: { state: 'active' },
+            include: [
+                { model: Image },
+                { model: User, attributes: ['id', 'username'] },
+                { model: Label }
+            ],
+            order: [['created_at', 'DESC']],
+            limit: 20
+        });
+        res.render('home', { posts });
+    } catch (error) {
+        console.error(error);
+        res.render('home', { posts: [] });
+    }
+});
 
 app.get('/post/:postId/image/:imageId', async (req, res) => {
     try {

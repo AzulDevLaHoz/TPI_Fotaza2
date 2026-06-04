@@ -1,0 +1,42 @@
+extends ../layouts/base.pug
+
+block content
+  h2.mb-4 Buscar publicaciones
+
+  form.mb-4(method="GET" action="/search")
+    .row.g-2
+      .col-md-4
+        input.form-control(
+          type="text"
+          name="q"
+          placeholder="Título o descripción"
+          value=query.q || ''
+        )
+      .col-md-3
+        input.form-control(
+          type="text"
+          name="label"
+          placeholder="Etiqueta"
+          value=query.label || ''
+        )
+      .col-md-3
+        input.form-control(
+          type="text"
+          name="username"
+          placeholder="Usuario"
+          value=query.username || ''
+        )
+      .col-md-2
+        button.btn.btn-primary.w-100(type="submit") Buscar
+
+  include ../partials/alert.pug
+
+  if posts.length === 0
+    .alert.alert-info No se encontraron publicaciones con esos criterios.
+  else
+    p.text-muted #{posts.length} resultado#{posts.length !== 1 ? 's' : ''}
+    .row.g-4
+      each post in posts
+        .col-sm-6.col-md-4
+          include ../partials/alert.pug
+          include ../partials/post-card.pug
