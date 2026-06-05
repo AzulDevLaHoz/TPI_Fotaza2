@@ -1,0 +1,25 @@
+.card.h-100
+  if post.Images && post.Images.length > 0
+    img.post-card-img(
+      src=`/post/${post.id}/image/${post.Images[0].id}`
+      alt=post.title
+    )
+  else
+    .post-card-placeholder
+      i.bi.bi-image
+  .card-body.d-flex.flex-column.p-3
+    h6.card-title.fw-bold.mb-1= post.title
+    if post.Labels && post.Labels.length > 0
+      .mb-2
+        each label in post.Labels
+          span.badge.bg-secondary.me-1= label.name
+    if post.description
+      p.card-text.text-muted.small.flex-grow-1= post.description
+    .d-flex.justify-content-between.align-items-center.mt-3
+      small.text-muted.d-flex.align-items-center.gap-1
+        i.bi.bi-person-circle
+        a.text-muted.text-decoration-none(href=`/profile/${post.User ? post.User.id : '#'}`)
+          = post.User ? post.User.username : 'desconocido'
+      a.btn.btn-sm.btn-primary(href=`/post/${post.id}`)
+        i.bi.bi-eye.me-1
+        | Ver
