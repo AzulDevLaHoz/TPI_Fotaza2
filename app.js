@@ -1,11 +1,9 @@
 import express from 'express';
 import session from 'express-session';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import 'dotenv/config';
-
 import sequelize from './models/config/config.js';
 import './models/sync/sync.js';
+
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import postRoutes from './routes/post.js';
@@ -13,25 +11,29 @@ import commentRoutes from './routes/comment.js';
 import followRoutes from './routes/follow.js';
 import ratingRoutes from './routes/rating.js';
 import searchRoutes from './routes/search.js';
+import homeRoutes from './routes/home.js';
+import imageRoutes from './routes/image.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', './views');
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.static('public'));
 
 app.use(session({
     secret: process.env.SESSION_SECRET || 'secreto_fotaza',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 }
+    cookie: {
+        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax'
+    }
 }));
 
 app.use((req, res, next) => {
@@ -39,6 +41,7 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/', homeRoutes);
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/post', postRoutes);
@@ -46,6 +49,7 @@ app.use('/comment', commentRoutes);
 app.use('/follows', followRoutes);
 app.use('/rating', ratingRoutes);
 app.use('/search', searchRoutes);
+app.use('/image', imageRoutes);
 
 app.get('/', async (req, res) => {
     try {
@@ -67,30 +71,12 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.get('/post/:postId/image/:imageId', async (req, res) => {
-    try {
-        const { Image } = await import('./models/sync/sync.js');
-        const image = await Image.findByPk(req.params.imageId);
-        if (!image || !image.file) return res.status(404).send('Imagen no encontrada');
-        res.set('Content-Type', 'image/jpeg');
-        res.send(image.file);
-    } catch (error) {
-        res.status(500).send('Error al cargar imagen');
-    }
-});
-
-async function startServer() {
-    try {
-        await sequelize.authenticate();
-        console.log('Conexión a la BD exitosa');
-        await sequelize.sync({ alter: true });
-        console.log('Modelos sincronizados');
+sequelize.sync({ alter: true })
+    .then(() => {
         app.listen(PORT, () => {
             console.log(`Servidor corriendo en http://localhost:${PORT}`);
         });
-    } catch (error) {
-        console.error('Error al iniciar:', error);
-    }
-}
-
-startServer();
+    })
+    .catch((err) => {
+        console.error('Error al iniciar:', err);
+    });
