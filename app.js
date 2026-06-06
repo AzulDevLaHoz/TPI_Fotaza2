@@ -7,13 +7,13 @@ import './models/sync/sync.js';
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import postRoutes from './routes/post.js';
+import imageRoutes from './routes/image.js';
 import commentRoutes from './routes/comment.js';
 import followRoutes from './routes/follow.js';
 import ratingRoutes from './routes/rating.js';
 import searchRoutes from './routes/search.js';
 import homeRoutes from './routes/home.js';
-import imageRoutes from './routes/image.js';
-
+import explorarRoutes from './routes/explorar.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -43,33 +43,14 @@ app.use((req, res, next) => {
 
 app.use('/', homeRoutes);
 app.use('/auth', authRoutes);
-app.use('/profile', profileRoutes);
 app.use('/post', postRoutes);
+app.use('/post', imageRoutes);
 app.use('/comment', commentRoutes);
 app.use('/follows', followRoutes);
 app.use('/rating', ratingRoutes);
 app.use('/search', searchRoutes);
-app.use('/image', imageRoutes);
-
-app.get('/', async (req, res) => {
-    try {
-        const { Post, Image, User, Label } = await import('./models/sync/sync.js');
-        const posts = await Post.findAll({
-            where: { state: 'active' },
-            include: [
-                { model: Image },
-                { model: User, attributes: ['id', 'username'] },
-                { model: Label }
-            ],
-            order: [['created_at', 'DESC']],
-            limit: 20
-        });
-        res.render('home', { posts });
-    } catch (error) {
-        console.error(error);
-        res.render('home', { posts: [] });
-    }
-});
+app.use('/profile', profileRoutes);
+app.use('/explorar', explorarRoutes);
 
 sequelize.sync({ alter: true })
     .then(() => {

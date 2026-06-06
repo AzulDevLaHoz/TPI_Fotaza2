@@ -1,0 +1,82 @@
+extends layouts/base.pug
+
+block content
+  .container.py-5
+
+    .d-flex.justify-content-between.align-items-center.mb-4.flex-wrap.gap-3
+      div
+        p.label-section — galería pública
+        h2.mb-0(style="font-size:1.5rem") explorar fotaza
+      .d-flex.gap-2
+        a.btn.btn-outline(href="/auth/login")
+          i.bi.bi-box-arrow-in-right.me-1
+          | iniciar sesión
+        a.btn.btn-amber(href="/auth/register")
+          i.bi.bi-person-plus.me-1
+          | crear cuenta
+
+    .mb-4(style="background:#1a1610;border:1px solid var(--amber-d);border-radius:var(--rl);padding:16px 20px")
+      .d-flex.align-items-center.gap-3
+        i.bi.bi-info-circle(style="font-size:1.3rem;color:var(--amber);flex-shrink:0")
+        div
+          strong(style="color:var(--amber);font-size:13px") estás navegando como invitado
+          p.mb-0(style="font-size:12px;color:var(--dim);margin-top:2px")
+            | solo ves fotos públicas. para comentar, valorar y subir fotos necesitás una cuenta.
+
+    if !posts || posts.length === 0
+      .card.text-center.py-5
+        .card-body
+          i.bi.bi-camera(style="font-size:2.5rem;color:var(--dim)")
+          p.mt-3(style="color:var(--muted)") no hay fotos públicas todavía.
+    else
+      .feed-grid
+        each post, pi in posts
+          .feed-item
+            .card.h-100
+
+              //- Carrusel si tiene más de una imagen
+              if post.Images && post.Images.length > 1
+                .carousel.slide(id=`carouselExplorar${pi}` data-bs-ride="false")
+                  .carousel-inner
+                    each image, ii in post.Images
+                      .carousel-item(class=ii === 0 ? 'active' : '')
+                        img(
+                          src=`/post/${post.id}/image/${image.id}`
+                          alt=post.title
+                          style="width:100%;height:200px;object-fit:cover;display:block"
+                          loading="lazy"
+                        )
+                  button.carousel-control-prev(type="button" data-bs-target=`#carouselExplorar${pi}` data-bs-slide="prev")
+                    span.carousel-control-prev-icon
+                  button.carousel-control-next(type="button" data-bs-target=`#carouselExplorar${pi}` data-bs-slide="next")
+                    span.carousel-control-next-icon
+
+              //- Imagen única
+              else if post.Images && post.Images.length === 1
+                img(
+                  src=`/post/${post.id}/image/${post.Images[0].id}`
+                  alt=post.title
+                  style="width:100%;height:200px;object-fit:cover;display:block"
+                  loading="lazy"
+                )
+              else
+                .post-placeholder
+                  i.bi.bi-image
+
+              .post-card-body
+                p.post-card-title= post.title
+                if post.Labels && post.Labels.length > 0
+                  .mb-2
+                    each label in post.Labels
+                      span.badge.badge-label.me-1= label.name
+                .post-card-footer
+                  small(style="font-size:11px;color:var(--dim)")
+                    i.bi.bi-person.me-1
+                    = post.User ? post.User.username : ''
+                  button.btn.btn-outline(
+                    disabled
+                    style="font-size:11px;padding:4px 12px;opacity:0.4;cursor:not-allowed"
+                    title="iniciá sesión para ver el post completo"
+                  )
+                    i.bi.bi-lock.me-1
+                    | ver
