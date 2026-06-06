@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "node --watch app.js",
+    "db:init": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,6 +24,7 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "bootstrap": "^5.3.8",
+    "connect-pg-simple": "^10.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-session": "^1.19.0",

@@ -1,0 +1,183 @@
+:root {
+  --fb-blue: #1877f2;
+  --fb-blue-hover: #166fe5;
+  --fb-bg: #f0f2f5;
+  --fb-white: #ffffff;
+  --fb-border: #dddfe2;
+  --fb-text: #1c1e21;
+  --fb-muted: #65676b;
+  --fb-green: #42b72a;
+  --fb-green-hover: #36a420;
+}
+
+body {
+  background-color: var(--fb-bg);
+  color: var(--fb-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ── Navbar ── */
+.navbar {
+  background-color: var(--fb-white) !important;
+  border-bottom: 1px solid var(--fb-border);
+  padding: 0 16px;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,.08);
+}
+
+.navbar-brand {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--fb-blue) !important;
+  letter-spacing: -1px;
+}
+
+.navbar .nav-link {
+  color: var(--fb-muted) !important;
+  font-weight: 500;
+  padding: 8px 12px !important;
+  border-radius: 8px;
+  transition: background .15s;
+}
+
+.navbar .nav-link:hover {
+  background-color: var(--fb-bg);
+  color: var(--fb-blue) !important;
+}
+
+.navbar .nav-link.active {
+  color: var(--fb-blue) !important;
+  border-bottom: 3px solid var(--fb-blue);
+  border-radius: 0;
+}
+
+/* ── Botones ── */
+.btn-primary {
+  background-color: var(--fb-blue);
+  border-color: var(--fb-blue);
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.btn-primary:hover {
+  background-color: var(--fb-blue-hover);
+  border-color: var(--fb-blue-hover);
+}
+
+.btn-success {
+  background-color: var(--fb-green);
+  border-color: var(--fb-green);
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.btn-success:hover {
+  background-color: var(--fb-green-hover);
+  border-color: var(--fb-green-hover);
+}
+
+/* ── Cards ── */
+.card {
+  border: 1px solid var(--fb-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  background-color: var(--fb-white);
+  transition: box-shadow .2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+
+.card-img-top {
+  border-radius: 12px 12px 0 0;
+}
+
+/* ── Inputs ── */
+.form-control {
+  border-radius: 8px;
+  border: 1.5px solid var(--fb-border);
+  background-color: var(--fb-bg);
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.form-control:focus {
+  border-color: var(--fb-blue);
+  box-shadow: 0 0 0 3px rgba(24,119,242,.15);
+  background-color: var(--fb-white);
+}
+
+/* ── Landing ── */
+.landing-hero {
+  min-height: 100vh;
+  background-color: var(--fb-white);
+  display: flex;
+  align-items: center;
+}
+
+.landing-logo {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--fb-blue);
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.landing-tagline {
+  font-size: 1.5rem;
+  color: var(--fb-text);
+  font-weight: 400;
+  margin-top: 8px;
+}
+
+.landing-card {
+  background: var(--fb-white);
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.12);
+  padding: 24px;
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--fb-border);
+  color: var(--fb-muted);
+  font-size: .75rem;
+}
+
+/* ── Post card ── */
+.post-card-img {
+  height: 220px;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 12px 12px 0 0;
+}
+
+.post-card-placeholder {
+  height: 220px;
+  background: linear-gradient(135deg, #e4e6ea, #c8cacd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px 12px 0 0;
+  color: var(--fb-muted);
+  font-size: 2rem;
+}
+
+/* ── Badge ── */
+.badge.bg-secondary {
+  background-color: #e4e6ea !important;
+  color: var(--fb-text);
+  font-weight: 500;
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+
+/* ── Separador de sección ── */
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--fb-text);
+}
