@@ -2,22 +2,22 @@ extends ../layouts/base.pug
 
 block content
   .d-flex.justify-content-between.align-items-center.mb-4
-    h2.section-title
-      i.bi.bi-grid-fill.me-2
-      | Publicaciones
-    a.btn.btn-primary(href="/post/create")
-      i.bi.bi-plus-lg.me-1
-      | Nueva publicación
+    div
+      p.label-section — todas las fotos
+      h2.mb-0(style="font-size:1.5rem") galería
+    a.btn.btn-amber(href="/post/create")
+      i.bi.bi-plus.me-1
+      | publicar
 
   include ../partials/alert.pug
 
   if !posts || posts.length === 0
     .card.text-center.py-5
       .card-body
-        i.bi.bi-camera.display-4.text-muted
-        p.mt-3.text-muted Todavía no hay publicaciones.
+        i.bi.bi-camera(style="font-size:2.5rem;color:var(--dim)")
+        p.mt-3(style="color:var(--muted)") todavía no hay publicaciones.
   else
-    .row.g-4
+    .feed-grid
       each post in posts
-        .col-sm-6.col-md-4
+        .feed-item
           include ../partials/post-card.pug

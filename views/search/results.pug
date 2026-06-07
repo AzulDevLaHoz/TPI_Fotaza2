@@ -1,42 +1,57 @@
 extends ../layouts/base.pug
 
 block content
-  h2.mb-4 Buscar publicaciones
+  .d-flex.justify-content-between.align-items-center.mb-4
+    div
+      p.label-section — búsqueda
+      h2.mb-0(style="font-size:1.5rem") buscar fotos
 
-  form.mb-4(method="GET" action="/search")
-    .row.g-2
-      .col-md-4
-        input.form-control(
-          type="text"
-          name="q"
-          placeholder="Título o descripción"
-          value=query.q || ''
-        )
-      .col-md-3
-        input.form-control(
-          type="text"
-          name="label"
-          placeholder="Etiqueta"
-          value=query.label || ''
-        )
-      .col-md-3
-        input.form-control(
-          type="text"
-          name="username"
-          placeholder="Usuario"
-          value=query.username || ''
-        )
-      .col-md-2
-        button.btn.btn-primary.w-100(type="submit") Buscar
+  //- Formulario de búsqueda
+  .card.mb-4
+    .card-body
+      form(method="GET" action="/search")
+        .row.g-2
+          .col-md-4
+            input.form-control(
+              type="text"
+              name="q"
+              placeholder="título o descripción"
+              value=query.q || ''
+            )
+          .col-md-3
+            input.form-control(
+              type="text"
+              name="label"
+              placeholder="etiqueta"
+              value=query.label || ''
+            )
+          .col-md-3
+            input.form-control(
+              type="text"
+              name="username"
+              placeholder="usuario"
+              value=query.username || ''
+            )
+          .col-md-2
+            button.btn.btn-amber.w-100(type="submit")
+              i.bi.bi-search.me-1
+              | buscar
 
   include ../partials/alert.pug
 
-  if posts.length === 0
-    .alert.alert-info No se encontraron publicaciones con esos criterios.
-  else
-    p.text-muted #{posts.length} resultado#{posts.length !== 1 ? 's' : ''}
-    .row.g-4
+  if posts && posts.length > 0
+    p.mb-3(style="font-size:11px;color:var(--dim)")
+      = posts.length + ' resultado' + (posts.length !== 1 ? 's' : '')
+    .feed-grid
       each post in posts
-        .col-sm-6.col-md-4
-          include ../partials/alert.pug
+        .feed-item
           include ../partials/post-card.pug
+  else
+    .card.text-center.py-5
+      .card-body
+        i.bi.bi-search(style="font-size:2.5rem;color:var(--dim)")
+        p.mt-3(style="color:var(--muted)")
+          if query.q || query.label || query.username
+            | no se encontraron fotos con esos criterios.
+          else
+            | usá el buscador para encontrar fotos.

@@ -3,61 +3,59 @@ extends ../layouts/base.pug
 block content
   include ../partials/alert.pug
 
-  //- Portada / header del perfil
+  //- Header del perfil
   .card.mb-4.overflow-hidden
-    .bg-primary(style="height:120px;background:linear-gradient(135deg,#1877f2,#42b72a) !important")
+    .profile-cover
     .card-body.pt-0
-      .d-flex.align-items-end.gap-3.mb-3(style="margin-top:-45px")
-        .rounded-circle.bg-white.border.border-4.border-white.d-flex.align-items-center.justify-content-center.flex-shrink-0(
-          style="width:90px;height:90px;font-size:2.5rem;font-weight:900;background:var(--fb-blue) !important;color:white;border-color:white !important"
-        )= profileUser.firstname[0].toUpperCase()
+      .d-flex.align-items-end.gap-3.mb-3(style="margin-top:-44px")
+        .avatar.avatar-lg(style="border:3px solid var(--bg-card)")
+          = profileUser.firstname[0].toUpperCase()
         div.pb-1
-          h4.fw-bold.mb-0= profileUser.firstname + ' ' + profileUser.lastname
-          p.text-muted.mb-0= '@' + profileUser.username
+          h4.mb-0(style="font-size:1.2rem")
+            = profileUser.firstname + ' ' + profileUser.lastname
+          p.mb-0(style="font-size:11px;color:var(--dim)") @#{profileUser.username}
 
       .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
 
         //- Stats
         .d-flex.gap-4
           div.text-center
-            h5.fw-bold.mb-0= followersCount
-            small.text-muted Seguidores
+            p.mb-0(style="font-size:1.1rem;font-weight:600;color:var(--text)")= followersCount
+            small(style="font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase") seguidores
           div.text-center
-            h5.fw-bold.mb-0= followingCount
-            small.text-muted Siguiendo
+            p.mb-0(style="font-size:1.1rem;font-weight:600;color:var(--text)")= followingCount
+            small(style="font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase") siguiendo
           div.text-center
-            h5.fw-bold.mb-0= profileUser.Posts ? profileUser.Posts.length : 0
-            small.text-muted Publicaciones
+            p.mb-0(style="font-size:1.1rem;font-weight:600;color:var(--text)")
+              = profileUser.Posts ? profileUser.Posts.length : 0
+            small(style="font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase") fotos
 
-        //- Botones de acción
+        //- Botones
         if user
           if user.id === profileUser.id
-            a.btn.btn-outline-secondary.btn-sm(href="#")
-              i.bi.bi-pencil-fill.me-1
-              | Editar perfil
+            a.btn.btn-outline(href="#")
+              i.bi.bi-pencil.me-1
+              | editar perfil
           else
-            .d-flex.gap-2
-              if isFollowing
-                form(method="POST" action=`/follows/unfollow/${profileUser.id}`)
-                  button.btn.btn-outline-secondary.fw-semibold(type="submit")
-                    i.bi.bi-person-check-fill.me-1
-                    | Siguiendo
-              else
-                form(method="POST" action=`/follows/follow/${profileUser.id}`)
-                  button.btn.btn-primary.fw-semibold(type="submit")
-                    i.bi.bi-person-plus-fill.me-1
-                    | Seguir
+            if isFollowing
+              form(method="POST" action=`/follows/unfollow/${profileUser.id}`)
+                button.btn.btn-outline(type="submit")
+                  i.bi.bi-person-check.me-1
+                  | siguiendo
+            else
+              form(method="POST" action=`/follows/follow/${profileUser.id}`)
+                button.btn.btn-amber(type="submit")
+                  i.bi.bi-person-plus.me-1
+                  | seguir
 
   //- Publicaciones
-  h5.fw-bold.mb-3
-    i.bi.bi-grid-3x3.me-2
-    | Publicaciones de #{profileUser.username}
+  p.label-section fotos de #{profileUser.username}
 
   if !profileUser.Posts || profileUser.Posts.length === 0
     .card.text-center.py-5
       .card-body
-        i.bi.bi-camera.display-4.text-muted
-        p.mt-3.text-muted Este usuario todavía no tiene publicaciones.
+        i.bi.bi-camera(style="font-size:2.5rem;color:var(--dim)")
+        p.mt-3(style="color:var(--muted)") este usuario todavía no tiene fotos.
   else
     .row.g-3
       each post in profileUser.Posts
