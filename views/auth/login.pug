@@ -1,41 +1,34 @@
 extends ../layouts/base.pug
 
 block content
-  .row.justify-content-center.mt-5
-    .col-md-5.col-lg-4
-      .text-center.mb-4
-        h1.fw-bold(style="color:var(--fb-blue);font-size:3rem;letter-spacing:-1px")
-          i.bi.bi-camera-fill
-          |  Fotaza
-        p.text-muted Iniciá sesión para ver tus fotos
+  .landing-wrap
+    .container
+      .row.justify-content-center
+        .col-md-5.col-lg-4
+          .text-center.mb-4
+            a(href="/" style="text-decoration:none")
+              .landing-logo(style="font-size:3rem") foto
+                span(style="color:var(--text);font-weight:400") za
+            p.mt-2(style="font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase") comunidad de fotografía
 
-      .landing-card
+          .landing-card
+            include ../partials/alert.pug
 
-        include ../partials/alert.pug
+            if registered
+              .alert.alert-success
+                i.bi.bi-check-circle.me-2
+                | cuenta creada, ya podés iniciar sesión.
 
-        if registered
-          .alert.alert-success.d-flex.align-items-center.gap-2
-            i.bi.bi-check-circle-fill
-            | ¡Cuenta creada! Ya podés iniciar sesión.
+            p.label-section.mb-3 — acceder
 
-        form(method="POST" action="/auth/login")
-          .mb-3
-            input.form-control.form-control-lg(
-              type="email"
-              name="email"
-              placeholder="Email"
-              required
-            )
-          .mb-3
-            input.form-control.form-control-lg(
-              type="password"
-              name="password"
-              placeholder="Contraseña"
-              required
-            )
-          button.btn.btn-primary.w-100.btn-lg.fw-bold(type="submit") Entrar
+            form(method="POST" action="/auth/login")
+              .mb-3
+                input.form-control.form-control-lg(type="email" name="email" placeholder="email" required)
+              .mb-3
+                input.form-control.form-control-lg(type="password" name="password" placeholder="contraseña" required)
+              button.btn.btn-amber.w-100.py-2(type="submit") entrar
 
-        hr.my-4
-        .text-center
-          p.mb-2.text-muted ¿No tenés cuenta?
-          a.btn.btn-success.w-100.fw-bold(href="/auth/register") Crear cuenta nueva
+            hr
+            .text-center
+              p.mb-2(style="font-size:12px;color:var(--dim)") ¿no tenés cuenta?
+              a.btn.btn-outline.w-100(href="/auth/register") registrarse

@@ -1,25 +1,31 @@
-.card.h-100
+.card.h-100.d-flex.flex-column
   if post.Images && post.Images.length > 0
-    img.post-card-img(
+    img.post-img(
       src=`/post/${post.id}/image/${post.Images[0].id}`
       alt=post.title
+      loading="lazy"
     )
   else
-    .post-card-placeholder
+    .post-placeholder
       i.bi.bi-image
-  .card-body.d-flex.flex-column.p-3
-    h6.card-title.fw-bold.mb-1= post.title
-    if post.Labels && post.Labels.length > 0
-      .mb-2
+  .post-card-body.d-flex.flex-column.flex-grow-1
+    p.post-card-title= post.title
+    .mb-2(style="min-height:1.4rem")
+      if post.Labels && post.Labels.length > 0
         each label in post.Labels
-          span.badge.bg-secondary.me-1= label.name
-    if post.description
-      p.card-text.text-muted.small.flex-grow-1= post.description
-    .d-flex.justify-content-between.align-items-center.mt-3
-      small.text-muted.d-flex.align-items-center.gap-1
-        i.bi.bi-person-circle
-        a.text-muted.text-decoration-none(href=`/profile/${post.User ? post.User.id : '#'}`)
-          = post.User ? post.User.username : 'desconocido'
-      a.btn.btn-sm.btn-primary(href=`/post/${post.id}`)
+          span.badge.badge-label.me-1= label.name
+    .flex-grow-1
+      if post.description
+        p(style="font-size:11px;color:var(--dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:0")
+          = post.description
+    .post-card-footer.mt-auto
+      small(style="font-size:11px;color:var(--dim)")
+        i.bi.bi-person.me-1
+        if post.User
+          a(href=`/profile/${post.User.id}` style="color:var(--muted);text-decoration:none")
+            = post.User.username
+        else
+          span desconocido
+      a.btn.btn-outline(href=`/post/${post.id}` style="font-size:11px;padding:4px 12px")
         i.bi.bi-eye.me-1
-        | Ver
+        | ver

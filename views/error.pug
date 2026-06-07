@@ -2,8 +2,8 @@ extends layouts/base.pug
 
 block content
   .row.justify-content-center.mt-5
-    .col-md-6.text-center
-      h1.display-1 😕
-      h2.mb-3 Algo salió mal
-      p.text-muted= message || 'Ocurrió un error inesperado.'
-      a.btn.btn-primary(href="/") Volver al inicio
+    .col-md-5.text-center
+      p(style="font-size:4rem;font-family:'Playfair Display',serif;color:var(--amber)") 404
+      h3.mb-3(style="font-weight:400") algo salió mal
+      p(style="color:var(--muted);font-size:13px")= message || 'ocurrió un error inesperado.'
+      a.btn.btn-amber.mt-3(href="/") volver al inicio

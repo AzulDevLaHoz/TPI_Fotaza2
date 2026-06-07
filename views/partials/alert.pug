@@ -1,9 +1,10 @@
 if error
   .alert.alert-danger.alert-dismissible.fade.show(role="alert")
+    i.bi.bi-exclamation-circle.me-2
     = error
-    button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Cerrar")
-
+    button.btn-close(type="button" data-bs-dismiss="alert")
 if success
   .alert.alert-success.alert-dismissible.fade.show(role="alert")
+    i.bi.bi-check-circle.me-2
     = success
-    button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Cerrar")
+    button.btn-close(type="button" data-bs-dismiss="alert")
