@@ -5,18 +5,12 @@ import { requireLogin } from '../middleware/auth.js';
 
 const router = Router();
 
-// Multer en memoria (guardamos el buffer en la BD)
-const storage = multer.memoryStorage();
-const upload = multer({ 
-    storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-        if (allowed.includes(file.mimetype)) {
-            cb(null, true);
-        } else {
-            cb(new Error('Solo se permiten imágenes (jpg, png, webp, gif)'));
-        }
+        allowed.includes(file.mimetype) ? cb(null, true) : cb(new Error('Solo imágenes'));
     }
 });
 
