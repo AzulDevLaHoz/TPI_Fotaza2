@@ -2,37 +2,29 @@ import { Op } from 'sequelize';
 import { Post, Image, User, Label } from '../models/sync/sync.js';
 
 export async function search(req, res) {
-    const { q, label, username, copyright } = req.query;
+    const { q, label, username } = req.query;
 
     try {
         const wherePost = { state: 'active' };
-        const includeUser = { model: User, attributes: ['id', 'username'] };
+        const includeUser = { model: User, attributes: ['id', 'username', 'firstname'] };
         const includeImage = { model: Image };
         const includeLabel = { model: Label };
 
-        // Filtro por título o descripción
-        if (q) {
+        if (q && q.trim() !== '') {
             wherePost[Op.or] = [
                 { title: { [Op.iLike]: `%${q}%` } },
                 { description: { [Op.iLike]: `%${q}%` } }
             ];
         }
 
-        // Filtro por usuario
-        if (username) {
+        if (username && username.trim() !== '') {
             includeUser.where = { username: { [Op.iLike]: `%${username}%` } };
             includeUser.required = true;
         }
 
-        // Filtro por etiqueta
-        if (label) {
+        if (label && label.trim() !== '') {
             includeLabel.where = { name: { [Op.iLike]: `%${label}%` } };
             includeLabel.required = true;
-        }
-
-        // Filtro por copyright
-        if (copyright !== undefined && copyright !== '') {
-            includeImage.where = { copyright: copyright === 'true' };
         }
 
         const posts = await Post.findAll({

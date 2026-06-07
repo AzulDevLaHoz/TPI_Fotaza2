@@ -5,7 +5,7 @@ export async function follow(req, res) {
     const followingId = parseInt(req.params.userId);
 
     if (followerId === followingId) {
-        return res.redirect(`/profile/${followingId}?error=no_puedes_seguirte`);
+        return res.redirect(`/profile/${followingId}`);
     }
 
     try {
@@ -14,7 +14,6 @@ export async function follow(req, res) {
 
         const follower = await User.findByPk(followerId);
 
-        // Verificar si ya lo sigue
         const alreadyFollowing = await follower.hasFollowing(userToFollow);
         if (!alreadyFollowing) {
             await follower.addFollowing(userToFollow);
@@ -23,7 +22,7 @@ export async function follow(req, res) {
         res.redirect(`/profile/${followingId}`);
     } catch (error) {
         console.error(error);
-        res.redirect(`/profile/${followingId}?error=true`);
+        res.redirect(`/profile/${followingId}`);
     }
 }
 
@@ -34,12 +33,13 @@ export async function unfollow(req, res) {
     try {
         const follower = await User.findByPk(followerId);
         const userToUnfollow = await User.findByPk(followingId);
+
         if (!userToUnfollow) return res.status(404).render('error', { message: 'Usuario no encontrado' });
 
         await follower.removeFollowing(userToUnfollow);
         res.redirect(`/profile/${followingId}`);
     } catch (error) {
         console.error(error);
-        res.redirect(`/profile/${followingId}?error=true`);
+        res.redirect(`/profile/${followingId}`);
     }
 }

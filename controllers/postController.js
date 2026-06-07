@@ -1,19 +1,13 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import sharp from 'sharp';
-import { Post, Image, User, Label, Comment } from '../models/sync/sync.js';
+import { Post, Image, User, Label, Comment, Rating } from '../models/sync/sync.js';
+import { aplicarMarcaAgua } from './imageController.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Listar todos los posts activos
 export async function index(req, res) {
     try {
         const posts = await Post.findAll({
             where: { state: 'active' },
             include: [
                 { model: Image },
-                { model: User, attributes: ['id', 'username'] },
+                { model: User, attributes: ['id', 'username', 'firstname'] },
                 { model: Label }
             ],
             order: [['created_at', 'DESC']]
@@ -25,12 +19,10 @@ export async function index(req, res) {
     }
 }
 
-// Formulario de nueva publicación
 export function showCreate(req, res) {
     res.render('posts/create', { error: null });
 }
 
-// Crear publicación
 export async function create(req, res) {
     const { title, description, labels, copyright, copyrightText } = req.body;
     const files = req.files;
@@ -46,7 +38,8 @@ export async function create(req, res) {
             user_id: req.session.user.id
         });
 
-        if (labels) {
+        // Procesar etiquetas
+        if (labels && labels.trim() !== '') {
             const labelNames = labels.split(',').map(l => l.trim()).filter(l => l);
             for (const name of labelNames) {
                 const [label] = await Label.findOrCreate({ where: { name } });
@@ -54,25 +47,19 @@ export async function create(req, res) {
             }
         }
 
+        // Procesar imágenes
         for (const file of files) {
             let imageBuffer = file.buffer;
+            const tieneCopyright = copyright === 'true';
 
-            if (copyright === 'true' && copyrightText) {
-                const svgText = `
-                    <svg width="400" height="50">
-                        <text x="10" y="35" font-size="28" fill="rgba(255,255,255,0.6)"
-                              font-family="Arial" font-weight="bold">© ${copyrightText}</text>
-                    </svg>`;
-                imageBuffer = await sharp(file.buffer)
-                    .composite([{ input: Buffer.from(svgText), gravity: 'south' }])
-                    .jpeg()
-                    .toBuffer();
+            if (tieneCopyright && copyrightText && copyrightText.trim() !== '') {
+                imageBuffer = await aplicarMarcaAgua(file.buffer, copyrightText);
             }
 
             await Image.create({
                 file: imageBuffer,
-                copyright: copyright === 'true',
-                copyrightText: copyrightText || null,
+                copyright: tieneCopyright,
+                copyrightText: tieneCopyright ? copyrightText : null,
                 post_id: post.id
             });
         }
@@ -84,7 +71,6 @@ export async function create(req, res) {
     }
 }
 
-// Ver publicación individual
 export async function show(req, res) {
     try {
         const post = await Post.findByPk(req.params.id, {
@@ -94,8 +80,9 @@ export async function show(req, res) {
                     include: [
                         {
                             model: Comment,
-                            include: [{ model: User, attributes: ['id', 'username'] }]
-                        }
+                            include: [{ model: User, attributes: ['id', 'username', 'firstname'] }]
+                        },
+                        { model: Rating }
                     ]
                 },
                 { model: User, attributes: ['id', 'username', 'firstname', 'lastname'] },
@@ -105,25 +92,38 @@ export async function show(req, res) {
 
         if (!post) return res.status(404).render('error', { message: 'Publicación no encontrada' });
 
-        res.render('posts/show', { post });
+        // Anónimos solo ven imágenes sin copyright
+        if (!req.session.user) {
+            post.Images = post.Images.filter(img => !img.copyright);
+        }
+
+        // Verificar si el usuario ya valoró cada imagen
+        const userRatings = {};
+        if (req.session.user) {
+            for (const image of post.Images) {
+                const rating = image.Ratings.find(r => r.user_id === req.session.user.id);
+                userRatings[image.id] = rating ? rating.value : null;
+            }
+        }
+
+        res.render('posts/show', { post, userRatings });
     } catch (error) {
         console.error(error);
         res.status(500).render('error', { message: 'Error al cargar la publicación' });
     }
 }
 
-// Eliminar publicación (solo el autor)
 export async function destroy(req, res) {
     try {
         const post = await Post.findByPk(req.params.id);
-        if (!post) return res.status(404).json({ error: 'No encontrado' });
+        if (!post) return res.status(404).render('error', { message: 'No encontrado' });
         if (post.user_id !== req.session.user.id) {
-            return res.status(403).json({ error: 'No autorizado' });
+            return res.status(403).render('error', { message: 'No autorizado' });
         }
         await post.destroy();
         res.redirect('/post');
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Error al eliminar' });
+        res.status(500).render('error', { message: 'Error al eliminar' });
     }
 }
