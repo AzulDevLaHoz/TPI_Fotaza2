@@ -40,13 +40,15 @@ block content
                 if userRatings && userRatings[image.id]
                   span.badge.badge-rating tu voto: #{userRatings[image.id]} ⭐
                 else
-                  button.btn.btn-outline-amber.btn-sm(
-                    data-bs-toggle="modal"
-                    data-bs-target=`#modalVotar${image.id}`
-                    style="font-size:11px"
-                  )
-                    i.bi.bi-star.me-1
-                    | valorar
+                  form(method="POST" action="/rating/rate")
+                    input(type="hidden" name="imageId" value=image.id)
+                    input(type="hidden" name="postId" value=post.id)
+                    .d-flex.align-items-center.gap-1
+                      button.btn.btn-link.p-0(type="submit" name="value" value="1" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
+                      button.btn.btn-link.p-0(type="submit" name="value" value="2" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
+                      button.btn.btn-link.p-0(type="submit" name="value" value="3" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
+                      button.btn.btn-link.p-0(type="submit" name="value" value="4" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
+                      button.btn.btn-link.p-0(type="submit" name="value" value="5" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
 
             //- Toggle comentarios (solo autor)
             if user && user.id === post.User.id
@@ -59,10 +61,9 @@ block content
                     i.bi.bi-unlock.me-1
                     | abrir comentarios
 
-            //- Comentarios inline — mismo layout que modal: lista arriba, input fijo abajo
+            //- Comentarios inline
             .d-flex.flex-column(style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:12px")
 
-              //- Lista scrolleable
               .flex-grow-1.overflow-auto.p-3(style="max-height:280px;min-height:60px")
                 p.label-section.mb-2 — comentarios
                 if !image.activeComments
@@ -82,7 +83,6 @@ block content
                 else if image.activeComments
                   p(style="font-size:12px;color:var(--dim)") todavía no hay comentarios.
 
-              //- Input fijo al fondo
               if image.activeComments
                 .p-3(style="border-top:1px solid var(--border)")
                   if user
@@ -96,6 +96,7 @@ block content
                           input#inputComentario.form-control(
                             type="text"
                             placeholder="comentar..."
+                            required
                             style="border-radius:20px 0 0 20px;font-size:12px"
                           )
                           button.btn.btn-amber(type="submit" style="border-radius:0 20px 20px 0;padding:0 14px")
@@ -104,6 +105,7 @@ block content
                     p.mb-0(style="font-size:12px;color:var(--dim);text-align:center")
                       a(href="/auth/login" style="color:var(--amber)") iniciá sesión
                       |  para comentar.
+
       //- ── CASO 2: Múltiples imágenes → carrusel + modales
       else if post.Images && post.Images.length > 1
         #carouselPost.carousel.slide.mb-2(data-bs-ride="false")
@@ -156,7 +158,6 @@ block content
               each label in post.Labels
                 span.badge.badge-label.me-1.mb-1= label.name
 
-          //- Resumen valoraciones (solo para múltiples imágenes)
           if post.Images && post.Images.length > 1
             .mb-4.pb-3(style="border-bottom:1px solid var(--border)")
               p.label-section.mb-2 — valoraciones por foto
@@ -199,7 +200,6 @@ block content
 
             .modal-body.p-0
               .row.g-0
-                //- Imagen
                 .col-lg-7(style="background:var(--bg);display:flex;align-items:center;justify-content:center;min-height:400px")
                   img(
                     src=`/post/${post.id}/image/${image.id}`
@@ -207,7 +207,6 @@ block content
                     style="max-width:100%;max-height:70vh;object-fit:contain;display:block;padding:12px"
                   )
 
-                //- Panel comentarios + valoración
                 .col-lg-5(style="border-left:1px solid var(--border);display:flex;flex-direction:column;max-height:70vh")
 
                   .p-3(style="border-bottom:1px solid var(--border)")
@@ -222,14 +221,15 @@ block content
                         if userRatings && userRatings[image.id]
                           span.badge.badge-rating tu voto: #{userRatings[image.id]} ⭐
                         else
-                          button.btn.btn-outline-amber.btn-sm(
-                            data-bs-toggle="modal"
-                            data-bs-target=`#modalVotar${image.id}`
-                            data-bs-dismiss="modal"
-                            style="font-size:11px"
-                          )
-                            i.bi.bi-star.me-1
-                            | valorar
+                          form(method="POST" action="/rating/rate")
+                            input(type="hidden" name="imageId" value=image.id)
+                            input(type="hidden" name="postId" value=post.id)
+                            .d-flex.align-items-center.gap-1
+                              button.btn.btn-link.p-0(type="submit" name="value" value="1" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
+                              button.btn.btn-link.p-0(type="submit" name="value" value="2" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
+                              button.btn.btn-link.p-0(type="submit" name="value" value="3" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
+                              button.btn.btn-link.p-0(type="submit" name="value" value="4" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
+                              button.btn.btn-link.p-0(type="submit" name="value" value="5" style="font-size:1.6rem;color:var(--amber);text-decoration:none;line-height:1") ★
 
                     if user && user.id === post.User.id
                       form(method="POST" action=`/comment/toggle/${image.id}`)
@@ -260,7 +260,6 @@ block content
                     else
                       p(style="font-size:12px;color:var(--dim)") todavía no hay comentarios.
 
-                  //- Comentario en modal: fetch para no cerrar
                   if image.activeComments && user
                     .p-3(style="border-top:1px solid var(--border)")
                       form(
@@ -286,32 +285,8 @@ block content
                         a(href="/auth/login" style="color:var(--amber)") iniciá sesión
                         |  para comentar.
 
-  //- Modales de valoración (separados para no anidar)
-  each image in post.Images
-    .modal.fade(id=`modalVotar${image.id}` tabindex="-1")
-      .modal-dialog.modal-sm.modal-dialog-centered
-        .modal-content
-          .modal-header
-            h6.modal-title valorar imagen
-            button.btn-close(type="button" data-bs-dismiss="modal")
-          form(method="POST" action="/rating/rate")
-            .modal-body
-              input(type="hidden" name="imageId" value=image.id)
-              input(type="hidden" name="postId" value=post.id)
-              label.form-label elegí tu puntuación
-              select.form-select(name="value")
-                option(value="1") ⭐ 1 — no me convenció
-                option(value="2") ⭐⭐ 2 — regular
-                option(value="3" selected) ⭐⭐⭐ 3 — bien
-                option(value="4") ⭐⭐⭐⭐ 4 — muy buena
-                option(value="5") ⭐⭐⭐⭐⭐ 5 — excelente
-            .modal-footer
-              button.btn.btn-ghost(type="button" data-bs-dismiss="modal") cancelar
-              button.btn.btn-amber(type="submit") confirmar
-
-  //- ══════════ JS: comentarios sin recargar ══════════
+  //- JS: comentarios sin recargar
   script.
-    // ── Función reutilizable para crear el HTML de un comentario nuevo
     function crearNodoComentario(texto) {
       const div = document.createElement('div');
       div.className = 'd-flex gap-2 mb-3';
@@ -326,7 +301,6 @@ block content
       return div;
     }
 
-    // ── Imagen única: comentario sin recargar la página
     const formUnico = document.getElementById('formComentario');
     if (formUnico) {
       formUnico.addEventListener('submit', async (e) => {
@@ -334,19 +308,15 @@ block content
         const input = document.getElementById('inputComentario');
         const texto = input.value.trim();
         if (!texto) return;
-
         const imageId = formUnico.dataset.imageId;
         const postId  = formUnico.dataset.postId;
-
         try {
           const res = await fetch('/comment/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `body=${encodeURIComponent(texto)}&imageId=${imageId}&postId=${postId}`
           });
-
           if (res.ok || res.redirected) {
-            // Insertar ANTES del form (arriba del input)
             formUnico.parentElement.insertBefore(crearNodoComentario(texto), formUnico);
             input.value = '';
           }
@@ -356,28 +326,23 @@ block content
       });
     }
 
-    // ── Modales (múltiples imágenes): comentario sin cerrar el modal
     document.querySelectorAll('.formComentarioModal').forEach(form => {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const input = form.querySelector('.inputComentarioModal');
         const texto = input.value.trim();
         if (!texto) return;
-
         const imageId = form.dataset.imageId;
         const postId  = form.dataset.postId;
         const modalId = form.dataset.modal;
-
         try {
           const res = await fetch('/comment/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `body=${encodeURIComponent(texto)}&imageId=${imageId}&postId=${postId}`
           });
-
           if (res.ok || res.redirected) {
             const zona = document.querySelector(`#${modalId} .overflow-auto`);
-            // Insertar al final de la lista (scroll abajo)
             zona.appendChild(crearNodoComentario(texto));
             zona.scrollTop = zona.scrollHeight;
             input.value = '';
