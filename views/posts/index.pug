@@ -3,11 +3,11 @@ extends ../layouts/base.pug
 block content
   .d-flex.justify-content-between.align-items-center.mb-4
     div
-      p.label-section — todas las fotos
-      h2.mb-0(style="font-size:1.5rem") galería
+      p.label-section — Todas las fotos
+      h2.mb-0(style="font-size:1.5rem") Galería
     a.btn.btn-amber(href="/post/create")
       i.bi.bi-plus.me-1
-      | publicar
+      | Publicar
 
   include ../partials/alert.pug
 
@@ -15,7 +15,7 @@ block content
     .card.text-center.py-5
       .card-body
         i.bi.bi-camera(style="font-size:2.5rem;color:var(--dim)")
-        p.mt-3(style="color:var(--muted)") todavía no hay publicaciones.
+        p.mt-3(style="color:var(--muted)") Todavía no hay publicaciones.
   else
     .feed-grid
       each post in posts

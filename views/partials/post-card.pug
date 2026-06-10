@@ -25,7 +25,7 @@
           a(href=`/profile/${post.User.id}` style="color:var(--muted);text-decoration:none")
             = post.User.username
         else
-          span desconocido
+          span Desconocido
       a.btn.btn-outline(href=`/post/${post.id}` style="font-size:11px;padding:4px 12px")
         i.bi.bi-eye.me-1
         | ver

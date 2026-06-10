@@ -636,3 +636,24 @@ footer {
   .topbar { display: flex; }
   footer { margin-left: 0; }
 }
+/* Star Ratin */
+.star-rating {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  color: var(--amber);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.15s, color 0.15s;
+}
+
+.star:hover {
+  color: #f0c040;
+  transform: scale(1.25);
+}
