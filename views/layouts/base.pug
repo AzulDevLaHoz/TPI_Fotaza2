@@ -3,7 +3,7 @@ html(lang="es")
   head
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    title fotaza
+    title FotazaApp
     link(rel="preconnect" href="https://fonts.googleapis.com")
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
     link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap")
@@ -22,7 +22,7 @@ html(lang="es")
 
       aside.sidebar#sidebar
         .sidebar-brand
-          a(href="/") Fotoaza
+          a(href="/") Fotaza
             span App
 
         nav.sidebar-nav
@@ -38,14 +38,14 @@ html(lang="es")
           hr(style="border-color:var(--border);margin:8px 12px")
           a.sidebar-link(href="/post/create")
             i.bi.bi-plus-circle
-            | Nueva foto
+            | Nueva Publicacion
           a.sidebar-link(href=`/profile/${user.id}`)
             i.bi.bi-person
             | Mi perfil
 
         .sidebar-footer
           a.sidebar-user(href=`/profile/${user.id}`)
-            .avatar.avatar-sm= user.firstname[0].toUpperCase()
+            .avatar.avatar-sm= user.username[0].toUpperCase()
             div
               .sidebar-user-name= user.username
           a.sidebar-link.mt-2(href="/auth/logout" style="color:var(--red)")

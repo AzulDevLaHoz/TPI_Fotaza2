@@ -24,7 +24,7 @@ export async function aplicarMarcaAgua(buffer, texto) {
         <svg width="${width}" height="${height}">
             <rect x="0" y="${height - fontSize * 2}"
                   width="${width}" height="${fontSize * 2}"
-                  fill="rgba(0,0,0,0.45)"/>
+                    fill="rgba(0,0,0,0.45)"/>
             <text
                 x="${width / 2}" y="${height - fontSize * 0.4}"
                 text-anchor="middle"

@@ -8,6 +8,7 @@ block content
       i.bi.bi-arrow-left
     p.label-section.mb-0 — publicación
 
+  //- ── CASO 1: Una sola imagen
   if post.Images && post.Images.length === 1
     - const image = post.Images[0]
     - const ratings = image.Ratings || []
@@ -22,6 +23,7 @@ block content
       )
       .card-body
 
+        //- Usuario + título
         .d-flex.align-items-center.justify-content-between.pb-3.mb-3(style="border-bottom:1px solid var(--border)")
           .d-flex.align-items-center.gap-2
             .avatar.avatar-xs= post.User.username[0].toUpperCase()
@@ -29,6 +31,7 @@ block content
               = post.User.username
           h6.mb-0(style="font-size:13px;color:var(--text);font-family:'Playfair Display',serif")= post.title
 
+        //- Valoraciones
         .d-flex.align-items-center.justify-content-between.pb-3.mb-3(style="border-bottom:1px solid var(--border)")
           .d-flex.align-items-center.gap-2#promedioUnico
             if avg
@@ -40,7 +43,7 @@ block content
             if userRatings && userRatings[image.id]
               span.badge.badge-rating tu voto: #{userRatings[image.id]} ⭐
             else
-              form(method="POST" action="/rating/rate")
+              form(method="POST" action="/rating/rate" novalidate)
                 input(type="hidden" name="imageId" value=image.id)
                 input(type="hidden" name="postId" value=post.id)
                 .star-rating
@@ -50,16 +53,24 @@ block content
                   button.star(type="button" name="value" value="4") ★
                   button.star(type="button" name="value" value="5") ★
 
+        //- Toggle comentarios (solo autor) — usa fetch
         if user && user.id === post.User.id
-          form.mb-3(method="POST" action=`/comment/toggle/${image.id}`)
-            button.btn.btn-outline.btn-sm(type="submit" style="font-size:11px")
-              if image.activeComments
-                i.bi.bi-lock.me-1
-                | cerrar comentarios
-              else
-                i.bi.bi-unlock.me-1
-                | abrir comentarios
+          - const estadoUnico = image.activeComments ? 'abierto' : 'cerrado'
+          button.btn.btn-outline.btn-sm.mb-3.btnToggleComentarios(
+            type="button"
+            data-image-id=image.id
+            data-post-id=post.id
+            data-estado=estadoUnico
+            style="font-size:11px"
+          )
+            if image.activeComments
+              i.bi.bi-lock.me-1
+              | cerrar comentarios
+            else
+              i.bi.bi-unlock.me-1
+              | abrir comentarios
 
+        //- Comentarios inline
         .d-flex.flex-column(style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:4px")
           .flex-grow-1.overflow-auto.p-3(style="max-height:280px;min-height:60px")
             p.label-section.mb-2 — comentarios
@@ -75,21 +86,27 @@ block content
                         = comment.User ? comment.User.username : 'usuario'
                       p.mb-0(style="font-size:12px;color:var(--text)")= comment.body
                     if user && (user.id === post.User.id || user.id === comment.user_id)
-                      form.d-inline(method="POST" action=`/comment/delete/${comment.id}`)
-                        button.btn.btn-ghost.text-danger(type="submit" style="font-size:11px;padding:2px 6px") eliminar
+                      button.btn.btn-ghost.text-danger.btnEliminarComentario(
+                        type="button"
+                        data-comment-id=comment.id
+                        style="font-size:11px;padding:2px 6px"
+                      ) eliminar
             else if image.activeComments
               p(style="font-size:12px;color:var(--dim)") todavía no hay comentarios.
           if image.activeComments
             .p-3(style="border-top:1px solid var(--border)")
               if user
-                form#formComentario(data-image-id=image.id data-post-id=post.id)
+                form#formComentario(
+                  data-image-id=image.id
+                  data-post-id=post.id
+                  data-inicial=user.username[0].toUpperCase()
+                )
                   .d-flex.gap-2.align-items-center
-                    .avatar.avatar-xs= user.firstname[0].toUpperCase()
+                    .avatar.avatar-xs= user.username[0].toUpperCase()
                     .input-group
                       input#inputComentario.form-control(
                         type="text"
                         placeholder="comentar..."
-                        required
                         style="border-radius:20px 0 0 20px;font-size:12px"
                       )
                       button.btn.btn-amber(type="submit" style="border-radius:0 20px 20px 0;padding:0 14px")
@@ -99,6 +116,7 @@ block content
                   a(href="/auth/login" style="color:var(--amber)") iniciá sesión
                   |  para comentar.
 
+  //- ── CASO 2: Múltiples imágenes → carrusel
   else if post.Images && post.Images.length > 1
     .card.mb-4
       #carouselPost.carousel.slide(data-bs-ride="false")
@@ -136,6 +154,7 @@ block content
           i.bi.bi-cursor.me-1
           | hacé click en la imagen para comentar y valorar
 
+  //- Info adicional
   if post.description || (post.Labels && post.Labels.length > 0) || (user && user.id === post.User.id)
     .card.mb-4
       .card-body
@@ -156,11 +175,13 @@ block content
               i.bi.bi-trash.me-2
               | eliminar publicación
 
+  //- ══════════ MODALES ══════════
   if post.Images && post.Images.length > 1
     each image, idx in post.Images
       - const ratings = image.Ratings || []
       - const total = ratings.length
       - const avg = total > 0 ? (ratings.reduce((a, r) => a + r.value, 0) / total).toFixed(1) : null
+      - const estadoModal = image.activeComments ? 'abierto' : 'cerrado'
 
       .modal.fade(id=`modalImagen${image.id}` tabindex="-1")
         .modal-dialog.modal-xl.modal-dialog-centered
@@ -178,6 +199,7 @@ block content
 
             .modal-body.p-0
               .row.g-0
+                //- Imagen
                 .col-lg-7(style="background:var(--bg);display:flex;align-items:center;justify-content:center;min-height:400px")
                   img(
                     src=`/post/${post.id}/image/${image.id}`
@@ -185,10 +207,12 @@ block content
                     style="max-width:100%;max-height:70vh;object-fit:contain;display:block;padding:12px"
                   )
 
+                //- Panel derecho
                 .col-lg-5(style="border-left:1px solid var(--border);display:flex;flex-direction:column;max-height:70vh")
 
+                  //- Valoraciones + toggle
                   .p-3(style="border-bottom:1px solid var(--border)")
-                    .d-flex.align-items-center.justify-content-between
+                    .d-flex.align-items-center.justify-content-between.mb-2
                       .d-flex.align-items-center.gap-2(id=`promedio${image.id}`)
                         if avg
                           span.badge.badge-rating ⭐ #{avg}
@@ -209,16 +233,23 @@ block content
                               button.star(type="button" name="value" value="4") ★
                               button.star(type="button" name="value" value="5") ★
 
+                    //- Toggle comentarios — usa fetch
                     if user && user.id === post.User.id
-                      form.mt-2(method="POST" action=`/comment/toggle/${image.id}`)
-                        button.btn.btn-outline.btn-sm.w-100(type="submit" style="font-size:11px")
-                          if image.activeComments
-                            i.bi.bi-lock.me-1
-                            | cerrar comentarios
-                          else
-                            i.bi.bi-unlock.me-1
-                            | abrir comentarios
+                      button.btn.btn-outline.btn-sm.w-100.btnToggleComentarios(
+                        type="button"
+                        data-image-id=image.id
+                        data-post-id=post.id
+                        data-estado=estadoModal
+                        style="font-size:11px"
+                      )
+                        if image.activeComments
+                          i.bi.bi-lock.me-1
+                          | cerrar comentarios
+                        else
+                          i.bi.bi-unlock.me-1
+                          | abrir comentarios
 
+                  //- Lista comentarios
                   .flex-grow-1.overflow-auto.p-3(style="max-height:300px")
                     p.label-section.mb-2 — comentarios
                     if !image.activeComments
@@ -233,26 +264,30 @@ block content
                                 = comment.User ? comment.User.username : 'usuario'
                               p.mb-0(style="font-size:12px;color:var(--text)")= comment.body
                             if user && (user.id === post.User.id || user.id === comment.user_id)
-                              form.d-inline(method="POST" action=`/comment/delete/${comment.id}`)
-                                button.btn.btn-ghost.text-danger(type="submit" style="font-size:11px;padding:2px 6px") eliminar
+                              button.btn.btn-ghost.text-danger.btnEliminarComentario(
+                                type="button"
+                                data-comment-id=comment.id
+                                style="font-size:11px;padding:2px 6px"
+                              ) eliminar
                     else
                       p(style="font-size:12px;color:var(--dim)") todavía no hay comentarios.
 
+                  //- Input comentario
                   if image.activeComments && user
                     .p-3(style="border-top:1px solid var(--border)")
                       form(
                         data-image-id=image.id
                         data-post-id=post.id
                         data-modal=`modalImagen${image.id}`
+                        data-inicial=user.username[0].toUpperCase()
                         class="formComentarioModal"
                       )
                         .d-flex.gap-2.align-items-center
-                          .avatar.avatar-xs= user.firstname[0].toUpperCase()
+                          .avatar.avatar-xs= user.username[0].toUpperCase()
                           .input-group
                             input.form-control.inputComentarioModal(
                               type="text"
                               placeholder="comentar..."
-                              required
                               style="border-radius:20px 0 0 20px;font-size:12px"
                             )
                             button.btn.btn-amber(type="submit" style="border-radius:0 20px 20px 0;padding:0 14px")

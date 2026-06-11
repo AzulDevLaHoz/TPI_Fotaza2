@@ -1,5 +1,6 @@
 import { Post, Image, User, Label, Comment, Rating } from '../models/sync/sync.js';
 import { aplicarMarcaAgua } from './imageController.js';
+import { validarPublicacion, obtenerError } from '../middleware/validates.js';
 
 export async function index(req, res) {
     try {
@@ -27,6 +28,12 @@ export async function create(req, res) {
     const { title, description, labels, copyright, copyrightText } = req.body;
     const files = req.files;
 
+    // Validación con Zod
+    const resultado = validarPublicacion({ title, description, labels, copyrightText });
+    if (!resultado.success) {
+        return res.render('posts/create', { error: obtenerError(resultado) });
+    }
+
     if (!files || files.length === 0) {
         return res.render('posts/create', { error: 'Tenés que subir al menos una imagen.' });
     }
@@ -38,7 +45,6 @@ export async function create(req, res) {
             user_id: req.session.user.id
         });
 
-        // Procesar etiquetas
         if (labels && labels.trim() !== '') {
             const labelNames = labels.split(',').map(l => l.trim()).filter(l => l);
             for (const name of labelNames) {
@@ -47,7 +53,6 @@ export async function create(req, res) {
             }
         }
 
-        // Procesar imágenes
         for (const file of files) {
             let imageBuffer = file.buffer;
             const tieneCopyright = copyright === 'true';
@@ -78,10 +83,7 @@ export async function show(req, res) {
                 {
                     model: Image,
                     include: [
-                        {
-                            model: Comment,
-                            include: [{ model: User, attributes: ['id', 'username', 'firstname'] }]
-                        },
+                        { model: Comment, include: [{ model: User, attributes: ['id', 'username', 'firstname'] }] },
                         { model: Rating }
                     ]
                 },
@@ -92,12 +94,10 @@ export async function show(req, res) {
 
         if (!post) return res.status(404).render('error', { message: 'Publicación no encontrada' });
 
-        // Anónimos solo ven imágenes sin copyright
         if (!req.session.user) {
             post.Images = post.Images.filter(img => !img.copyright);
         }
 
-        // Verificar si el usuario ya valoró cada imagen
         const userRatings = {};
         if (req.session.user) {
             for (const image of post.Images) {

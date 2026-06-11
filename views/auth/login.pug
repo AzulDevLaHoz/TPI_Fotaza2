@@ -21,11 +21,11 @@ block content
 
             p.label-section.mb-3 — acceder
 
-            form(method="POST" action="/auth/login")
+            form(method="POST" action="/auth/login" novalidate)
               .mb-3
-                input.form-control.form-control-lg(type="email" name="email" placeholder="email" required)
+                input.form-control.form-control-lg(type="email" name="email" placeholder="email")
               .mb-3
-                input.form-control.form-control-lg(type="password" name="password" placeholder="contraseña" required)
+                input.form-control.form-control-lg(type="password" name="password" placeholder="contraseña")
               button.btn.btn-amber.w-100.py-2(type="submit") entrar
 
             hr

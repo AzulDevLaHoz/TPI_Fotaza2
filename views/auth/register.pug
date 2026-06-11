@@ -16,19 +16,19 @@ block content
 
             p.label-section.mb-3 — Tus datos
 
-            form(method="POST" action="/auth/register")
+            form(method="POST" action="/auth/register" novalidate)
               .mb-3
                 .row.g-2
                   .col-6
-                    input.form-control(type="text" name="firstname" placeholder="Nombre" required)
+                    input.form-control(type="text" name="firstname" placeholder="Nombre")
                   .col-6
-                    input.form-control(type="text" name="lastname" placeholder="Apellido" required)
+                    input.form-control(type="text" name="lastname" placeholder="Apellido")
               .mb-3
-                input.form-control(type="text" name="username" placeholder="Nombre de usuario" required)
+                input.form-control(type="text" name="username" placeholder="Nombre de usuario")
               .mb-3
-                input.form-control(type="email" name="email" placeholder="Email" required)
+                input.form-control(type="email" name="email" placeholder="Email")
               .mb-3
-                input.form-control(type="password" name="password" placeholder="Contraseña (mín. 6 caracteres)" required minlength="6")
+                input.form-control(type="password" name="password" placeholder="Contraseña (mín. 6 caracteres)" minlength="6")
               .mb-3
                 small(style="font-size:11px;color:var(--dim)")
                   | Al registrarte aceptás las normas de la comunidad.

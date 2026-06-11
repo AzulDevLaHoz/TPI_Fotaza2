@@ -1,8 +1,15 @@
 import { Rating, Image, Post } from '../models/sync/sync.js';
+import { validarValoracion, obtenerError } from '../middleware/validates.js';
 
 export async function rate(req, res) {
     const { value, imageId, postId } = req.body;
     const userId = req.session.user.id;
+
+    // Validación con Zod
+    const resultado = validarValoracion({ value, imageId, postId });
+    if (!resultado.success) {
+        return res.status(400).json({ error: obtenerError(resultado) });
+    }
 
     try {
         const image = await Image.findByPk(imageId, {
@@ -27,18 +34,12 @@ export async function rate(req, res) {
             image_id: imageId
         });
 
-        // Calcular promedio actualizado para devolverlo al frontend
         const allRatings = await Rating.findAll({ where: { image_id: imageId } });
         const total = allRatings.length;
         const suma = allRatings.reduce((acc, r) => acc + r.value, 0);
         const promedio = parseFloat((suma / total).toFixed(1));
 
-        res.status(200).json({
-            ok: true,
-            value: parseInt(value),
-            promedio,
-            total
-        });
+        res.status(200).json({ ok: true, value: parseInt(value), promedio, total });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error al valorar' });

@@ -4,19 +4,19 @@ block content
   .row.justify-content-center
     .col-lg-7
 
-      p.label-section — nueva publicación
-      h2.mb-4(style="font-size:1.5rem") subir foto
+      p.label-section — Nueva publicación
+      h2.mb-4(style="font-size:1.5rem") Subir foto
 
       include ../partials/alert.pug
 
       .card
         .card-body
 
-          form(method="POST" action="/post/create" enctype="multipart/form-data")
+          form(method="POST" action="/post/create" enctype="multipart/form-data" novalidate)
 
             .mb-4
               label.form-label título *
-              input.form-control(type="text" name="title" placeholder="un título descriptivo" required)
+              input.form-control(type="text" name="title" placeholder="un título descriptivo")
 
             .mb-4
               label.form-label descripción
@@ -37,12 +37,10 @@ block content
               .form-check.mb-2
                 input.form-check-input#copyrightCheck(type="checkbox" name="copyright" value="true")
                 label.form-check-label(for="copyrightCheck")
-                  i.bi.bi-shield-lock.me-1(style="color:var(--amber)")
                   | proteger con copyright
               #copyrightTextDiv(style="display:none")
                 input.form-control.form-control(type="text" name="copyrightText" placeholder="© tu nombre 2025")
                 .form-text texto que aparecerá como marca de agua en la imagen.
 
             button.btn.btn-amber.w-100.py-2(type="submit")
-              i.bi.bi-cloud-upload.me-2
               | publicar

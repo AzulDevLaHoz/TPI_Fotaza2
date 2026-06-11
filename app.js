@@ -26,7 +26,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.static('public'));
 
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'secreto_fotaza',
+    secret: process.env.SESSION_SECRET || 'session_key',
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -52,7 +52,7 @@ app.use('/search', searchRoutes);
 app.use('/profile', profileRoutes);
 app.use('/explorar', explorarRoutes);
 
-sequelize.sync({ alter: true })
+sequelize.sync()
     .then(() => {
         app.listen(PORT, () => {
             console.log(`Servidor corriendo en http://localhost:${PORT}`);
