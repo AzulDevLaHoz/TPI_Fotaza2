@@ -9,11 +9,10 @@ block content
     .card-body.pt-0
       .d-flex.align-items-end.gap-3.mb-3(style="margin-top:-44px")
         .avatar.avatar-lg(style="border:3px solid var(--bg-card)")
-          = profileUser.firstname[0].toUpperCase()
+          = profileUser.username[0].toUpperCase()
         div.pb-1
           h4.mb-0(style="font-size:1.2rem")
-            = profileUser.firstname + ' ' + profileUser.lastname
-          p.mb-0(style="font-size:11px;color:var(--dim)") @#{profileUser.username}
+            = profileUser.username
 
       .d-flex.align-items-center.justify-content-between.flex-wrap.gap-3
 
@@ -21,41 +20,41 @@ block content
         .d-flex.gap-4
           div.text-center
             p.mb-0(style="font-size:1.1rem;font-weight:600;color:var(--text)")= followersCount
-            small(style="font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase") seguidores
+            small(style="font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase") Seguidores
           div.text-center
             p.mb-0(style="font-size:1.1rem;font-weight:600;color:var(--text)")= followingCount
-            small(style="font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase") siguiendo
+            small(style="font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase") Seguidos
           div.text-center
             p.mb-0(style="font-size:1.1rem;font-weight:600;color:var(--text)")
               = profileUser.Posts ? profileUser.Posts.length : 0
-            small(style="font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase") fotos
+            small(style="font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase") Fotos
 
         //- Botones
         if user
           if user.id === profileUser.id
             a.btn.btn-outline(href="#")
               i.bi.bi-pencil.me-1
-              | editar perfil
+              | Editar perfil
           else
             if isFollowing
               form(method="POST" action=`/follows/unfollow/${profileUser.id}`)
                 button.btn.btn-outline(type="submit")
                   i.bi.bi-person-check.me-1
-                  | siguiendo
+                  | Dejar de Seguir
             else
               form(method="POST" action=`/follows/follow/${profileUser.id}`)
                 button.btn.btn-amber(type="submit")
                   i.bi.bi-person-plus.me-1
-                  | seguir
+                  | Seguir
 
   //- Publicaciones
-  p.label-section fotos de #{profileUser.username}
+  p.label-section Fotos de #{profileUser.username}
 
   if !profileUser.Posts || profileUser.Posts.length === 0
     .card.text-center.py-5
       .card-body
         i.bi.bi-camera(style="font-size:2.5rem;color:var(--dim)")
-        p.mt-3(style="color:var(--muted)") este usuario todavía no tiene fotos.
+        p.mt-3(style="color:var(--muted)") Este usuario todavía no tiene fotos.
   else
     .row.g-3
       each post in profileUser.Posts

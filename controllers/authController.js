@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { User } from '../models/sync/sync.js';
+import { validarLogin, validarRegistro, obtenerError } from '../middleware/validates.js';
 
 export function showRegister(req, res) {
     if (req.session.user) return res.redirect('/');
@@ -8,6 +9,19 @@ export function showRegister(req, res) {
 
 export async function register(req, res) {
     const { username, email, password, firstname, lastname } = req.body;
+
+    const resultado = validarRegistro({
+        username:  username  || '',
+        email:     email     || '',
+        password:  password  || '',
+        firstname: firstname || '',
+        lastname:  lastname  || ''
+    });
+
+    if (!resultado.success) {
+        return res.render('auth/register', { error: obtenerError(resultado) });
+    }
+
     try {
         const existingEmail = await User.findOne({ where: { email } });
         if (existingEmail) {
@@ -44,6 +58,16 @@ export function showLogin(req, res) {
 
 export async function login(req, res) {
     const { email, password } = req.body;
+
+    const resultado = validarLogin({
+        email:    email    || '',
+        password: password || ''
+    });
+
+    if (!resultado.success) {
+        return res.render('auth/login', { error: obtenerError(resultado), registered: null });
+    }
+
     try {
         const user = await User.findOne({ where: { email } });
 
@@ -61,12 +85,12 @@ export async function login(req, res) {
         }
 
         req.session.user = {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            rol: user.rol,
+            id:        user.id,
+            username:  user.username,
+            email:     user.email,
+            rol:       user.rol,
             firstname: user.firstname,
-            lastname: user.lastname
+            lastname:  user.lastname
         };
 
         res.redirect('/');

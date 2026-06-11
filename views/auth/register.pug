@@ -7,36 +7,36 @@ block content
         .col-md-6.col-lg-5
           .text-center.mb-4
             a(href="/" style="text-decoration:none")
-              .landing-logo(style="font-size:3rem") foto
-                span(style="color:var(--text);font-weight:400") za
-            p.mt-2(style="font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase") crear cuenta nueva
+              .landing-logo(style="font-size:3rem") Fotaza
+                span(style="color:var(--text);font-weight:400") App
+            p.mt-2(style="font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase") Crear cuenta nueva
 
           .landing-card
             include ../partials/alert.pug
 
-            p.label-section.mb-3 — tus datos
+            p.label-section.mb-3 — Tus datos
 
-            form(method="POST" action="/auth/register")
+            form(method="POST" action="/auth/register" novalidate)
               .mb-3
                 .row.g-2
                   .col-6
-                    input.form-control(type="text" name="firstname" placeholder="nombre" required)
+                    input.form-control(type="text" name="firstname" placeholder="Nombre")
                   .col-6
-                    input.form-control(type="text" name="lastname" placeholder="apellido" required)
+                    input.form-control(type="text" name="lastname" placeholder="Apellido")
               .mb-3
-                input.form-control(type="text" name="username" placeholder="nombre de usuario" required)
+                input.form-control(type="text" name="username" placeholder="Nombre de usuario")
               .mb-3
-                input.form-control(type="email" name="email" placeholder="email" required)
+                input.form-control(type="email" name="email" placeholder="Email")
               .mb-3
-                input.form-control(type="password" name="password" placeholder="contraseña (mín. 6 caracteres)" required minlength="6")
+                input.form-control(type="password" name="password" placeholder="Contraseña (mín. 6 caracteres)" minlength="6")
               .mb-3
                 small(style="font-size:11px;color:var(--dim)")
-                  | al registrarte aceptás las normas de la comunidad.
+                  | Al registrarte aceptás las normas de la comunidad.
               button.btn.btn-amber.w-100.py-2(type="submit")
                 i.bi.bi-person-plus.me-2
-                | crear cuenta
+                | Crear cuenta
 
             hr
             .text-center
-              p.mb-2(style="font-size:12px;color:var(--dim)") ¿ya tenés cuenta?
+              p.mb-2(style="font-size:12px;color:var(--dim)") ¿Ya tenés cuenta?
               a.btn.btn-outline.w-100(href="/auth/login") iniciar sesión

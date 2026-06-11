@@ -3,198 +3,198 @@ extends ../layouts/base.pug
 block content
   include ../partials/alert.pug
 
-  .row.g-4
-    //- Columna izquierda
-    .col-lg-8
+  .d-flex.align-items-center.gap-2.mb-3
+    a.btn.btn-ghost(href="/post")
+      i.bi.bi-arrow-left
+    p.label-section.mb-0 — publicación
 
-      .d-flex.align-items-center.gap-2.mb-3
-        a.btn.btn-ghost(href="/post")
-          i.bi.bi-arrow-left
-        p.label-section.mb-0 — publicación
+  //- ── CASO 1: Una sola imagen
+  if post.Images && post.Images.length === 1
+    - const image = post.Images[0]
+    - const ratings = image.Ratings || []
+    - const total = ratings.length
+    - const avg = total > 0 ? (ratings.reduce((a, r) => a + r.value, 0) / total).toFixed(1) : null
 
-      //- ── CASO 1: Una sola imagen → inline con comentarios visibles
-      if post.Images && post.Images.length === 1
-        - const image = post.Images[0]
-        - const ratings = image.Ratings || []
-        - const total = ratings.length
-        - const avg = total > 0 ? (ratings.reduce((a, r) => a + r.value, 0) / total).toFixed(1) : null
+    .card.mb-4
+      img.w-100(
+        src=`/post/${post.id}/image/${image.id}`
+        alt=post.title
+        style="max-height:580px;object-fit:contain;background:var(--bg)"
+      )
+      .card-body
 
-        .card.mb-3
-          img.w-100(
-            src=`/post/${post.id}/image/${image.id}`
-            alt=post.title
-            style="max-height:520px;object-fit:contain;background:var(--bg)"
+        //- Usuario + título
+        .d-flex.align-items-center.justify-content-between.pb-3.mb-3(style="border-bottom:1px solid var(--border)")
+          .d-flex.align-items-center.gap-2
+            .avatar.avatar-xs= post.User.username[0].toUpperCase()
+            a(href=`/profile/${post.User.id}` style="font-weight:600;color:var(--text);text-decoration:none;font-size:13px")
+              = post.User.username
+          h6.mb-0(style="font-size:13px;color:var(--text);font-family:'Playfair Display',serif")= post.title
+
+        //- Valoraciones
+        .d-flex.align-items-center.justify-content-between.pb-3.mb-3(style="border-bottom:1px solid var(--border)")
+          .d-flex.align-items-center.gap-2#promedioUnico
+            if avg
+              span.badge.badge-rating ⭐ #{avg}
+              span(style="font-size:11px;color:var(--dim)") #{total} votacion#{total !== 1 ? 'es' : ''}
+            else
+              span(style="font-size:12px;color:var(--dim)") sin valoraciones
+          if user && user.id !== post.User.id
+            if userRatings && userRatings[image.id]
+              span.badge.badge-rating tu voto: #{userRatings[image.id]} ⭐
+            else
+              form(method="POST" action="/rating/rate" novalidate)
+                input(type="hidden" name="imageId" value=image.id)
+                input(type="hidden" name="postId" value=post.id)
+                .star-rating
+                  button.star(type="button" name="value" value="1") ★
+                  button.star(type="button" name="value" value="2") ★
+                  button.star(type="button" name="value" value="3") ★
+                  button.star(type="button" name="value" value="4") ★
+                  button.star(type="button" name="value" value="5") ★
+
+        //- Toggle comentarios (solo autor) — usa fetch
+        if user && user.id === post.User.id
+          - const estadoUnico = image.activeComments ? 'abierto' : 'cerrado'
+          button.btn.btn-outline.btn-sm.mb-3.btnToggleComentarios(
+            type="button"
+            data-image-id=image.id
+            data-post-id=post.id
+            data-estado=estadoUnico
+            style="font-size:11px"
           )
-          .card-body
+            if image.activeComments
+              i.bi.bi-lock.me-1
+              | cerrar comentarios
+            else
+              i.bi.bi-unlock.me-1
+              | abrir comentarios
 
-            //- Valoraciones
-            .d-flex.align-items-center.justify-content-between.pb-3.mb-3(style="border-bottom:1px solid var(--border)")
-              .d-flex.align-items-center.gap-2
-                if avg
-                  span.badge.badge-rating ⭐ #{avg}
-                  span(style="font-size:11px;color:var(--dim)") #{total} votacion#{total !== 1 ? 'es' : ''}
-                else
-                  span(style="font-size:12px;color:var(--dim)") sin valoraciones
-
-              if user && user.id !== post.User.id
-                if userRatings && userRatings[image.id]
-                  span.badge.badge-rating tu voto: #{userRatings[image.id]} ⭐
-                else
-                  button.btn.btn-outline-amber.btn-sm(
-                    data-bs-toggle="modal"
-                    data-bs-target=`#modalVotar${image.id}`
-                    style="font-size:11px"
-                  )
-                    i.bi.bi-star.me-1
-                    | valorar
-
-            //- Toggle comentarios (solo autor)
-            if user && user.id === post.User.id
-              form.mb-3(method="POST" action=`/comment/toggle/${image.id}`)
-                button.btn.btn-outline.btn-sm(type="submit" style="font-size:11px")
-                  if image.activeComments
-                    i.bi.bi-lock.me-1
-                    | cerrar comentarios
-                  else
-                    i.bi.bi-unlock.me-1
-                    | abrir comentarios
-
-            //- Comentarios inline — mismo layout que modal: lista arriba, input fijo abajo
-            .d-flex.flex-column(style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:12px")
-
-              //- Lista scrolleable
-              .flex-grow-1.overflow-auto.p-3(style="max-height:280px;min-height:60px")
-                p.label-section.mb-2 — comentarios
-                if !image.activeComments
-                  p(style="font-size:12px;color:var(--dim);font-style:italic") los comentarios están cerrados.
-                else if image.Comments && image.Comments.length > 0
-                  each comment in image.Comments
-                    .d-flex.gap-2.mb-3
-                      .avatar.avatar-xs= comment.User ? comment.User.username[0].toUpperCase() : '?'
-                      .flex-grow-1
-                        .comment-bubble
-                          strong(style="font-size:11px;color:var(--amber)")
-                            = comment.User ? comment.User.username : 'usuario'
-                          p.mb-0(style="font-size:12px;color:var(--text)")= comment.body
-                        if user && (user.id === post.User.id || user.id === comment.user_id)
-                          form.d-inline(method="POST" action=`/comment/delete/${comment.id}`)
-                            button.btn.btn-ghost.text-danger(type="submit" style="font-size:11px;padding:2px 6px") eliminar
-                else if image.activeComments
-                  p(style="font-size:12px;color:var(--dim)") todavía no hay comentarios.
-
-              //- Input fijo al fondo
-              if image.activeComments
-                .p-3(style="border-top:1px solid var(--border)")
-                  if user
-                    form#formComentario(
-                      data-image-id=image.id
-                      data-post-id=post.id
-                    )
-                      .d-flex.gap-2.align-items-center
-                        .avatar.avatar-xs= user.firstname[0].toUpperCase()
-                        .input-group
-                          input#inputComentario.form-control(
-                            type="text"
-                            placeholder="comentar..."
-                            style="border-radius:20px 0 0 20px;font-size:12px"
-                          )
-                          button.btn.btn-amber(type="submit" style="border-radius:0 20px 20px 0;padding:0 14px")
-                            i.bi.bi-send-fill
-                  else
-                    p.mb-0(style="font-size:12px;color:var(--dim);text-align:center")
-                      a(href="/auth/login" style="color:var(--amber)") iniciá sesión
-                      |  para comentar.
-      //- ── CASO 2: Múltiples imágenes → carrusel + modales
-      else if post.Images && post.Images.length > 1
-        #carouselPost.carousel.slide.mb-2(data-bs-ride="false")
-          .carousel-indicators
-            each image, i in post.Images
-              button(
-                type="button"
-                data-bs-target="#carouselPost"
-                data-bs-slide-to=i
-                class=i === 0 ? 'active' : ''
-                style="background:var(--amber);width:6px;height:6px;border-radius:50%;border:none"
-              )
-          .carousel-inner(style="border-radius:var(--rl);overflow:hidden;background:var(--bg-hover)")
-            each image, i in post.Images
-              .carousel-item(class=i === 0 ? 'active' : '')
-                img.d-block.w-100(
-                  src=`/post/${post.id}/image/${image.id}`
-                  alt=post.title
-                  style="max-height:520px;object-fit:contain;cursor:pointer"
-                  data-bs-toggle="modal"
-                  data-bs-target=`#modalImagen${image.id}`
+        //- Comentarios inline
+        .d-flex.flex-column(style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:4px")
+          .flex-grow-1.overflow-auto.p-3(style="max-height:280px;min-height:60px")
+            p.label-section.mb-2 — comentarios
+            if !image.activeComments
+              p(style="font-size:12px;color:var(--dim);font-style:italic") los comentarios están cerrados.
+            else if image.Comments && image.Comments.length > 0
+              each comment in image.Comments
+                .d-flex.gap-2.mb-3
+                  .avatar.avatar-xs= comment.User ? comment.User.username[0].toUpperCase() : '?'
+                  .flex-grow-1
+                    .comment-bubble
+                      strong(style="font-size:11px;color:var(--amber)")
+                        = comment.User ? comment.User.username : 'usuario'
+                      p.mb-0(style="font-size:12px;color:var(--text)")= comment.body
+                    if user && (user.id === post.User.id || user.id === comment.user_id)
+                      button.btn.btn-ghost.text-danger.btnEliminarComentario(
+                        type="button"
+                        data-comment-id=comment.id
+                        style="font-size:11px;padding:2px 6px"
+                      ) eliminar
+            else if image.activeComments
+              p(style="font-size:12px;color:var(--dim)") todavía no hay comentarios.
+          if image.activeComments
+            .p-3(style="border-top:1px solid var(--border)")
+              if user
+                form#formComentario(
+                  data-image-id=image.id
+                  data-post-id=post.id
+                  data-inicial=user.username[0].toUpperCase()
                 )
-          button.carousel-control-prev(type="button" data-bs-target="#carouselPost" data-bs-slide="prev")
-            span.carousel-control-prev-icon
-          button.carousel-control-next(type="button" data-bs-target="#carouselPost" data-bs-slide="next")
-            span.carousel-control-next-icon
+                  .d-flex.gap-2.align-items-center
+                    .avatar.avatar-xs= user.username[0].toUpperCase()
+                    .input-group
+                      input#inputComentario.form-control(
+                        type="text"
+                        placeholder="comentar..."
+                        style="border-radius:20px 0 0 20px;font-size:12px"
+                      )
+                      button.btn.btn-amber(type="submit" style="border-radius:0 20px 20px 0;padding:0 14px")
+                        i.bi.bi-send-fill
+              else
+                p.mb-0(style="font-size:12px;color:var(--dim);text-align:center")
+                  a(href="/auth/login" style="color:var(--amber)") iniciá sesión
+                  |  para comentar.
 
-        p.text-center.mt-2(style="font-size:11px;color:var(--dim)")
+  //- ── CASO 2: Múltiples imágenes → carrusel
+  else if post.Images && post.Images.length > 1
+    .card.mb-4
+      #carouselPost.carousel.slide(data-bs-ride="false")
+        .carousel-indicators
+          each image, i in post.Images
+            button(
+              type="button"
+              data-bs-target="#carouselPost"
+              data-bs-slide-to=i
+              class=i === 0 ? 'active' : ''
+              style="background:var(--amber);width:6px;height:6px;border-radius:50%;border:none"
+            )
+        .carousel-inner(style="background:var(--bg)")
+          each image, i in post.Images
+            .carousel-item(class=i === 0 ? 'active' : '')
+              img.d-block.w-100(
+                src=`/post/${post.id}/image/${image.id}`
+                alt=post.title
+                style="max-height:580px;object-fit:contain;cursor:pointer"
+                data-bs-toggle="modal"
+                data-bs-target=`#modalImagen${image.id}`
+              )
+        button.carousel-control-prev(type="button" data-bs-target="#carouselPost" data-bs-slide="prev")
+          span.carousel-control-prev-icon
+        button.carousel-control-next(type="button" data-bs-target="#carouselPost" data-bs-slide="next")
+          span.carousel-control-next-icon
+      .card-body
+        .d-flex.align-items-center.justify-content-between.pb-3.mb-2(style="border-bottom:1px solid var(--border)")
+          .d-flex.align-items-center.gap-2
+            .avatar.avatar-xs= post.User.username[0].toUpperCase()
+            a(href=`/profile/${post.User.id}` style="font-weight:600;color:var(--text);text-decoration:none;font-size:13px")
+              = post.User.username
+          h6.mb-0(style="font-size:13px;color:var(--text);font-family:'Playfair Display',serif")= post.title
+        p.text-center.mb-0(style="font-size:11px;color:var(--dim)")
           i.bi.bi-cursor.me-1
           | hacé click en la imagen para comentar y valorar
 
-    //- Columna derecha: info del post
-    .col-lg-4
-      .card(style="position:sticky;top:24px")
-        .card-body
-          .d-flex.align-items-center.gap-3.mb-4.pb-3(style="border-bottom:1px solid var(--border)")
-            .avatar.avatar-md= post.User.firstname[0].toUpperCase()
-            div
-              a(href=`/profile/${post.User.id}` style="font-weight:600;color:var(--text);text-decoration:none;font-size:14px")
-                = post.User.firstname + ' ' + post.User.lastname
-              p.mb-0(style="font-size:11px;color:var(--dim)") @#{post.User.username}
+  //- Info adicional
+  if post.description || (post.Labels && post.Labels.length > 0) || (user && user.id === post.User.id)
+    .card.mb-4
+      .card-body
+        if post.description
+          p.mb-3(style="font-size:13px;color:var(--muted);line-height:1.6")= post.description
+        if post.Labels && post.Labels.length > 0
+          .mb-2
+            each label in post.Labels
+              span.badge.badge-label.me-1.mb-1= label.name
+        if user && user.id === post.User.id
+          hr
+          form(
+            method="POST"
+            action=`/post/${post.id}/delete`
+            onsubmit="return confirm('¿seguro que querés eliminar esta publicación?')"
+          )
+            button.btn.btn-danger(type="submit")
+              i.bi.bi-trash.me-2
+              | eliminar publicación
 
-          h4.mb-2(style="font-size:1.1rem")= post.title
-
-          if post.description
-            p.mb-3(style="font-size:13px;color:var(--muted);line-height:1.6")= post.description
-
-          if post.Labels && post.Labels.length > 0
-            .mb-4
-              each label in post.Labels
-                span.badge.badge-label.me-1.mb-1= label.name
-
-          //- Resumen valoraciones (solo para múltiples imágenes)
-          if post.Images && post.Images.length > 1
-            .mb-4.pb-3(style="border-bottom:1px solid var(--border)")
-              p.label-section.mb-2 — valoraciones por foto
-              each image, i in post.Images
-                - const ratingsR = image.Ratings || []
-                - const totalR = ratingsR.length
-                - const avgR = totalR > 0 ? (ratingsR.reduce((a, r) => a + r.value, 0) / totalR).toFixed(1) : null
-                .d-flex.align-items-center.justify-content-between.mb-1
-                  small(style="font-size:11px;color:var(--dim)") foto #{i + 1}
-                  if avgR
-                    span.badge.badge-rating ⭐ #{avgR} (#{totalR})
-                  else
-                    span(style="font-size:11px;color:var(--dim)") sin votos
-
-          if user && user.id === post.User.id
-            form(
-              method="POST"
-              action=`/post/${post.id}/delete`
-              onsubmit="return confirm('¿seguro que querés eliminar esta publicación?')"
-            )
-              button.btn.btn-danger.w-100(type="submit")
-                i.bi.bi-trash.me-2
-                | eliminar publicación
-
-  //- ══════════ MODALES (solo para múltiples imágenes) ══════════
+  //- ══════════ MODALES ══════════
   if post.Images && post.Images.length > 1
     each image, idx in post.Images
       - const ratings = image.Ratings || []
       - const total = ratings.length
       - const avg = total > 0 ? (ratings.reduce((a, r) => a + r.value, 0) / total).toFixed(1) : null
+      - const estadoModal = image.activeComments ? 'abierto' : 'cerrado'
 
       .modal.fade(id=`modalImagen${image.id}` tabindex="-1")
         .modal-dialog.modal-xl.modal-dialog-centered
           .modal-content
             .modal-header(style="padding:12px 20px")
-              div
-                h6.modal-title= post.title
-                small(style="font-size:11px;color:var(--dim)") foto #{idx + 1} de #{post.Images.length}
+              .d-flex.align-items-center.justify-content-between.w-100.me-3
+                .d-flex.align-items-center.gap-2
+                  .avatar.avatar-xs= post.User.username[0].toUpperCase()
+                  a(href=`/profile/${post.User.id}` style="font-weight:600;color:var(--text);text-decoration:none;font-size:13px")
+                    = post.User.username
+                div
+                  h6.modal-title.mb-0= post.title
+                  small(style="font-size:11px;color:var(--dim)") foto #{idx + 1} de #{post.Images.length}
               button.btn-close(type="button" data-bs-dismiss="modal")
 
             .modal-body.p-0
@@ -207,12 +207,13 @@ block content
                     style="max-width:100%;max-height:70vh;object-fit:contain;display:block;padding:12px"
                   )
 
-                //- Panel comentarios + valoración
+                //- Panel derecho
                 .col-lg-5(style="border-left:1px solid var(--border);display:flex;flex-direction:column;max-height:70vh")
 
+                  //- Valoraciones + toggle
                   .p-3(style="border-bottom:1px solid var(--border)")
                     .d-flex.align-items-center.justify-content-between.mb-2
-                      .d-flex.align-items-center.gap-2
+                      .d-flex.align-items-center.gap-2(id=`promedio${image.id}`)
                         if avg
                           span.badge.badge-rating ⭐ #{avg}
                           span(style="font-size:11px;color:var(--dim)") #{total} votacion#{total !== 1 ? 'es' : ''}
@@ -222,25 +223,33 @@ block content
                         if userRatings && userRatings[image.id]
                           span.badge.badge-rating tu voto: #{userRatings[image.id]} ⭐
                         else
-                          button.btn.btn-outline-amber.btn-sm(
-                            data-bs-toggle="modal"
-                            data-bs-target=`#modalVotar${image.id}`
-                            data-bs-dismiss="modal"
-                            style="font-size:11px"
-                          )
-                            i.bi.bi-star.me-1
-                            | valorar
+                          form(method="POST" action="/rating/rate")
+                            input(type="hidden" name="imageId" value=image.id)
+                            input(type="hidden" name="postId" value=post.id)
+                            .star-rating
+                              button.star(type="button" name="value" value="1") ★
+                              button.star(type="button" name="value" value="2") ★
+                              button.star(type="button" name="value" value="3") ★
+                              button.star(type="button" name="value" value="4") ★
+                              button.star(type="button" name="value" value="5") ★
 
+                    //- Toggle comentarios — usa fetch
                     if user && user.id === post.User.id
-                      form(method="POST" action=`/comment/toggle/${image.id}`)
-                        button.btn.btn-outline.btn-sm.w-100(type="submit" style="font-size:11px")
-                          if image.activeComments
-                            i.bi.bi-lock.me-1
-                            | cerrar comentarios
-                          else
-                            i.bi.bi-unlock.me-1
-                            | abrir comentarios
+                      button.btn.btn-outline.btn-sm.w-100.btnToggleComentarios(
+                        type="button"
+                        data-image-id=image.id
+                        data-post-id=post.id
+                        data-estado=estadoModal
+                        style="font-size:11px"
+                      )
+                        if image.activeComments
+                          i.bi.bi-lock.me-1
+                          | cerrar comentarios
+                        else
+                          i.bi.bi-unlock.me-1
+                          | abrir comentarios
 
+                  //- Lista comentarios
                   .flex-grow-1.overflow-auto.p-3(style="max-height:300px")
                     p.label-section.mb-2 — comentarios
                     if !image.activeComments
@@ -255,27 +264,30 @@ block content
                                 = comment.User ? comment.User.username : 'usuario'
                               p.mb-0(style="font-size:12px;color:var(--text)")= comment.body
                             if user && (user.id === post.User.id || user.id === comment.user_id)
-                              form.d-inline(method="POST" action=`/comment/delete/${comment.id}`)
-                                button.btn.btn-ghost.text-danger(type="submit" style="font-size:11px;padding:2px 6px") eliminar
+                              button.btn.btn-ghost.text-danger.btnEliminarComentario(
+                                type="button"
+                                data-comment-id=comment.id
+                                style="font-size:11px;padding:2px 6px"
+                              ) eliminar
                     else
                       p(style="font-size:12px;color:var(--dim)") todavía no hay comentarios.
 
-                  //- Comentario en modal: fetch para no cerrar
+                  //- Input comentario
                   if image.activeComments && user
                     .p-3(style="border-top:1px solid var(--border)")
                       form(
                         data-image-id=image.id
                         data-post-id=post.id
                         data-modal=`modalImagen${image.id}`
+                        data-inicial=user.username[0].toUpperCase()
                         class="formComentarioModal"
                       )
                         .d-flex.gap-2.align-items-center
-                          .avatar.avatar-xs= user.firstname[0].toUpperCase()
+                          .avatar.avatar-xs= user.username[0].toUpperCase()
                           .input-group
                             input.form-control.inputComentarioModal(
                               type="text"
                               placeholder="comentar..."
-                              required
                               style="border-radius:20px 0 0 20px;font-size:12px"
                             )
                             button.btn.btn-amber(type="submit" style="border-radius:0 20px 20px 0;padding:0 14px")
@@ -285,105 +297,3 @@ block content
                       p.mb-0(style="font-size:12px;color:var(--dim);text-align:center")
                         a(href="/auth/login" style="color:var(--amber)") iniciá sesión
                         |  para comentar.
-
-  //- Modales de valoración (separados para no anidar)
-  each image in post.Images
-    .modal.fade(id=`modalVotar${image.id}` tabindex="-1")
-      .modal-dialog.modal-sm.modal-dialog-centered
-        .modal-content
-          .modal-header
-            h6.modal-title valorar imagen
-            button.btn-close(type="button" data-bs-dismiss="modal")
-          form(method="POST" action="/rating/rate")
-            .modal-body
-              input(type="hidden" name="imageId" value=image.id)
-              input(type="hidden" name="postId" value=post.id)
-              label.form-label elegí tu puntuación
-              select.form-select(name="value")
-                option(value="1") ⭐ 1 — no me convenció
-                option(value="2") ⭐⭐ 2 — regular
-                option(value="3" selected) ⭐⭐⭐ 3 — bien
-                option(value="4") ⭐⭐⭐⭐ 4 — muy buena
-                option(value="5") ⭐⭐⭐⭐⭐ 5 — excelente
-            .modal-footer
-              button.btn.btn-ghost(type="button" data-bs-dismiss="modal") cancelar
-              button.btn.btn-amber(type="submit") confirmar
-
-  //- ══════════ JS: comentarios sin recargar ══════════
-  script.
-    // ── Función reutilizable para crear el HTML de un comentario nuevo
-    function crearNodoComentario(texto) {
-      const div = document.createElement('div');
-      div.className = 'd-flex gap-2 mb-3';
-      div.innerHTML = `
-        <div style="width:26px;height:26px;border-radius:50%;background:var(--bg-hover);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--amber);font-size:10px;font-weight:600;flex-shrink:0">?</div>
-        <div class="flex-grow-1">
-          <div class="comment-bubble">
-            <strong style="font-size:11px;color:var(--amber)">vos</strong>
-            <p class="mb-0" style="font-size:12px;color:var(--text)">${texto}</p>
-          </div>
-        </div>`;
-      return div;
-    }
-
-    // ── Imagen única: comentario sin recargar la página
-    const formUnico = document.getElementById('formComentario');
-    if (formUnico) {
-      formUnico.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const input = document.getElementById('inputComentario');
-        const texto = input.value.trim();
-        if (!texto) return;
-
-        const imageId = formUnico.dataset.imageId;
-        const postId  = formUnico.dataset.postId;
-
-        try {
-          const res = await fetch('/comment/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `body=${encodeURIComponent(texto)}&imageId=${imageId}&postId=${postId}`
-          });
-
-          if (res.ok || res.redirected) {
-            // Insertar ANTES del form (arriba del input)
-            formUnico.parentElement.insertBefore(crearNodoComentario(texto), formUnico);
-            input.value = '';
-          }
-        } catch (err) {
-          console.error('Error al comentar:', err);
-        }
-      });
-    }
-
-    // ── Modales (múltiples imágenes): comentario sin cerrar el modal
-    document.querySelectorAll('.formComentarioModal').forEach(form => {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const input = form.querySelector('.inputComentarioModal');
-        const texto = input.value.trim();
-        if (!texto) return;
-
-        const imageId = form.dataset.imageId;
-        const postId  = form.dataset.postId;
-        const modalId = form.dataset.modal;
-
-        try {
-          const res = await fetch('/comment/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `body=${encodeURIComponent(texto)}&imageId=${imageId}&postId=${postId}`
-          });
-
-          if (res.ok || res.redirected) {
-            const zona = document.querySelector(`#${modalId} .overflow-auto`);
-            // Insertar al final de la lista (scroll abajo)
-            zona.appendChild(crearNodoComentario(texto));
-            zona.scrollTop = zona.scrollHeight;
-            input.value = '';
-          }
-        } catch (err) {
-          console.error('Error al comentar:', err);
-        }
-      });
-    });

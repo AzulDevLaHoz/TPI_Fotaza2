@@ -7,9 +7,9 @@ block content
         .col-md-5.col-lg-4
           .text-center.mb-4
             a(href="/" style="text-decoration:none")
-              .landing-logo(style="font-size:3rem") foto
-                span(style="color:var(--text);font-weight:400") za
-            p.mt-2(style="font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase") comunidad de fotografía
+              .landing-logo(style="font-size:3rem") Fotaza
+                span(style="color:var(--text);font-weight:400") App
+            p.mt-2(style="font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase") Comunidad de fotografía
 
           .landing-card
             include ../partials/alert.pug
@@ -17,18 +17,18 @@ block content
             if registered
               .alert.alert-success
                 i.bi.bi-check-circle.me-2
-                | cuenta creada, ya podés iniciar sesión.
+                | Cuenta creada, ya podés iniciar sesión.
 
             p.label-section.mb-3 — acceder
 
-            form(method="POST" action="/auth/login")
+            form(method="POST" action="/auth/login" novalidate)
               .mb-3
-                input.form-control.form-control-lg(type="email" name="email" placeholder="email" required)
+                input.form-control.form-control-lg(type="email" name="email" placeholder="email")
               .mb-3
-                input.form-control.form-control-lg(type="password" name="password" placeholder="contraseña" required)
+                input.form-control.form-control-lg(type="password" name="password" placeholder="contraseña")
               button.btn.btn-amber.w-100.py-2(type="submit") entrar
 
             hr
             .text-center
-              p.mb-2(style="font-size:12px;color:var(--dim)") ¿no tenés cuenta?
-              a.btn.btn-outline.w-100(href="/auth/register") registrarse
+              p.mb-2(style="font-size:12px;color:var(--dim)") ¿No tenés cuenta?
+              a.btn.btn-outline.w-100(href="/auth/register") Registrarse

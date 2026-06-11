@@ -1,8 +1,8 @@
 nav.navbar.navbar-expand-lg
   .container
     a.navbar-brand(href="/")
-      | foto
-      span za
+      | Fotaza
+      span App
     button.navbar-toggler(
       type="button"
       data-bs-toggle="collapse"
@@ -14,20 +14,20 @@ nav.navbar.navbar-expand-lg
         li.nav-item
           a.nav-link(href="/")
             i.bi.bi-house.me-1
-            | inicio
+            | Inicio
         li.nav-item
           a.nav-link(href="/post")
             i.bi.bi-grid.me-1
-            | galería
+            | Galería
         li.nav-item
           a.nav-link(href="/search")
             i.bi.bi-search.me-1
-            | buscar
+            | Buscar
       ul.navbar-nav.align-items-center.gap-2
         li.nav-item
           a.btn.btn-primary.btn-sm.px-3(href="/post/create")
             i.bi.bi-plus.me-1
-            | publicar
+            | Publicar
         li.nav-item.dropdown
           a.nav-link.dropdown-toggle.d-flex.align-items-center.gap-2(
             href="#"
@@ -40,10 +40,10 @@ nav.navbar.navbar-expand-lg
             li
               a.dropdown-item(href=`/profile/${user.id}`)
                 i.bi.bi-person.me-2
-                | mi perfil
+                | Mi perfil
             li
               hr.dropdown-divider
             li
               a.dropdown-item.text-danger(href="/auth/logout")
                 i.bi.bi-box-arrow-right.me-2
-                | salir
+                | Salir
