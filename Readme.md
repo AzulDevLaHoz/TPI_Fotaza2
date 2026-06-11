@@ -1,7 +1,7 @@
 # Fotaza 2 — Comunidad de Fotografía
 **Trabajo Práctico Integrador — Programación Web II**  
 **Universidad de La Punta — 2026**  
-**Autora:** Azul De La Hoz  
+**Autor:** Azul De La Hoz  
 
 ---
 
